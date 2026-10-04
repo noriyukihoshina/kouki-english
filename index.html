@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高校受験 英単語帳 (240問版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .perspective { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .transition-transform {
+            transition-property: transform;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 500ms;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <header class="bg-white shadow-sm p-4 text-center relative">
+        <div class="inline-block px-3 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full mb-1">
+            幸希 向け高校受験対策
+        </div>
+        <h1 class="text-2xl font-bold text-gray-800">高校受験対策 英単語帳 (1〜240問)</h1>
+        
+        <div class="mt-3 flex flex-wrap justify-center items-center gap-2 text-xs md:text-sm text-gray-600 bg-blue-50 p-2 rounded-lg max-w-xl mx-auto border border-blue-100">
+            <span class="font-semibold text-blue-800 flex items-center">
+                <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                同期コード:
+            </span>
+            <input type="text" id="sync-code-input" class="px-2 py-1 border border-gray-300 rounded text-center font-mono font-bold w-32 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" placeholder="kouki0827" value="kouki0827" />
+            <button onclick="changeSyncCode()" class="px-3 py-1 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 transition-colors shadow-sm">同期設定</button>
+            <span id="sync-status" class="ml-2 text-xs font-medium text-emerald-600 flex items-center hidden">
+                <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></span> 同期中
+            </span>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto p-4 flex flex-col items-center max-w-3xl">
+        
+        <div class="flex flex-col md:flex-row w-full justify-between items-center mb-6 gap-4">
+            <div class="flex space-x-4">
+                <button id="tab-flashcard" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors" onclick="switchTab('flashcard')">単語帳モード</button>
+                <button id="tab-list" class="px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg shadow-sm font-bold hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors" onclick="switchTab('list')">間違えた単語一覧</button>
+            </div>
+            <button onclick="initiateReset()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg shadow-sm font-semibold hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 flex items-center transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                </svg>
+                履歴リセット
+            </button>
+        </div>
+
+        <div id="flashcard-area" class="w-full flex flex-col items-center">
+            
+            <div class="flex justify-center gap-2 mb-4 bg-gray-200 p-1 rounded-full shadow-inner">
+                <button id="mode-all-btn" class="px-6 py-2 rounded-full font-bold text-sm bg-white text-blue-700 shadow transition-all duration-200" onclick="setMode('all')">全問モード</button>
+                <button id="mode-review-btn" class="px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200" onclick="setMode('review')">復習モード (×のみ)</button>
+            </div>
+
+            <div class="mb-4 text-gray-500 font-medium text-sm flex gap-4">
+                <span>出題: <span id="current-index-display" class="font-bold text-gray-700">1</span> / <span id="total-words-display">0</span>問</span>
+                <span class="border-l border-gray-300 pl-4">現在の連続学習: <span id="session-count-display" class="font-bold text-blue-600">0</span>問</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row items-center justify-center w-full max-w-2xl gap-6">
+                
+                <div class="relative w-full max-w-md aspect-[4/3] perspective cursor-pointer" id="flashcard" onclick="flipCard()">
+                    <div id="card-inner" class="w-full h-full relative preserve-3d transition-transform">
+                        
+                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center backface-hidden border-2 border-gray-100 p-6">
+                            <div id="front-mistake-count" class="absolute top-4 right-4 text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg text-sm hidden">
+                                × <span id="front-mistake-number">0</span>
+                            </div>
+                            <h2 id="word-en" class="text-4xl md:text-5xl font-bold mb-4 text-center break-all text-gray-800 tracking-tight"></h2>
+                            <p id="word-kana" class="text-xl md:text-2xl text-gray-400 text-center font-medium"></p>
+                        </div>
+
+                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center backface-hidden rotate-y-180 border-2 border-blue-100 p-6">
+                            <div id="back-mistake-count" class="absolute top-4 right-4 text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg text-sm hidden">
+                                × <span id="back-mistake-number">0</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-blue-400 mb-3 uppercase tracking-wider">意味</h3>
+                            <p id="word-ja" class="text-3xl md:text-4xl font-bold text-center text-gray-800 leading-tight"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-row md:flex-col gap-4 justify-center items-center shrink-0 w-full md:w-auto">
+                    <button id="flip-btn" onclick="flipCard()" class="w-16 h-16 md:w-20 md:h-20 bg-gray-100 border-2 border-gray-200 rounded-2xl flex items-center justify-center shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-300 text-gray-600 transition-all" title="めくる (Enter)">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </button>
+                    
+                    <div id="judgment-controls" class="flex gap-4 md:flex-col hidden absolute md:relative z-10 md:z-auto">
+                        <button onclick="judge(true, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-green-50 border-2 border-green-200 text-green-600 text-4xl font-bold shadow-md hover:bg-green-100 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300 flex items-center justify-center transition-all" title="正解">
+                            〇
+                        </button>
+                        <button onclick="judge(false, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-red-50 border-2 border-red-200 text-red-600 text-4xl font-bold shadow-md hover:bg-red-100 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 flex items-center justify-center transition-all" title="不正解">
+                            ×
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-6 text-sm text-gray-400 font-medium">※カードをタップ、または[Enter]キーでめくります</p>
+        </div>
+
+        <div id="list-area" class="w-full hidden flex-col items-center">
+            <h2 class="text-xl font-bold mb-4 text-gray-800">×がついた単語一覧</h2>
+            <div class="w-full overflow-x-auto bg-white rounded-xl shadow border border-gray-100">
+                <table class="min-w-full leading-normal">
+                    <thead>
+                        <tr>
+                            <th class="px-5 py-4 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-bold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('en')">
+                                単語 <span id="sort-icon-en" class="ml-1 text-gray-400"></span>
+                            </th>
+                            <th class="px-5 py-4 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-bold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('ja')">
+                                意味 <span id="sort-icon-ja" class="ml-1 text-gray-400"></span>
+                            </th>
+                            <th class="px-5 py-4 border-b-2 border-gray-200 bg-gray-50 text-left text-xs font-bold text-gray-600 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onclick="sortTable('mistakes')">
+                                履歴 (直近5回) <span id="sort-icon-mistakes" class="ml-1 text-blue-500">▼</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="mistake-list-body">
+                    </tbody>
+                </table>
+            </div>
+            <div id="no-mistakes-msg" class="mt-8 text-gray-500 font-medium hidden">
+                ×がついた単語はありません。素晴らしい！🎉
+            </div>
+        </div>
+
+        <div id="unified-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 w-11/12 max-w-sm transform transition-all scale-100">
+                <h3 id="modal-title" class="text-2xl font-bold text-gray-800 mb-4 text-center hidden"></h3>
+                <p id="modal-message" class="text-lg font-medium text-gray-600 mb-8 text-center leading-relaxed"></p>
+                <div id="modal-btn-container" class="flex flex-col gap-3">
+                    <button id="modal-btn-primary" class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 font-bold transition-colors text-lg shadow-sm">
+                        プライマリ
+                    </button>
+                    <button id="modal-btn-secondary" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-300 font-bold transition-colors shadow-sm hidden">
+                        セカンダリ
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- 厳選240単語データ ---
+        const initialWordList = [
+            { id: 1, en: "people", kana: "（ピープル）", ja: "人々", mistakes: 0, history: [] },
+            { id: 2, en: "one", kana: "（ワン）", ja: "1", mistakes: 0, history: [] },
+            { id: 3, en: "time", kana: "（タイム）", ja: "時間", mistakes: 0, history: [] },
+            { id: 4, en: "Japanese", kana: "（ジャパニーズ）", ja: "日本語、日本人", mistakes: 0, history: [] },
+            { id: 5, en: "school", kana: "（スクール）", ja: "学校", mistakes: 0, history: [] },
+            { id: 6, en: "English", kana: "（イングリッシュ）", ja: "英語", mistakes: 0, history: [] },
+            { id: 7, en: "question", kana: "（クエスチョン）", ja: "質問", mistakes: 0, history: [] },
+            { id: 8, en: "first", kana: "（ファースト）", ja: "1番め(の)", mistakes: 0, history: [] },
+            { id: 9, en: "Japan", kana: "（ジャパン）", ja: "日本", mistakes: 0, history: [] },
+            { id: 10, en: "years", kana: "（イヤーズ）", ja: "年(複数)", mistakes: 0, history: [] },
+            { id: 11, en: "food", kana: "（フード）", ja: "食べ物", mistakes: 0, history: [] },
+            { id: 12, en: "day", kana: "（デイ）", ja: "日", mistakes: 0, history: [] },
+            { id: 13, en: "world", kana: "（ワールド）", ja: "世界", mistakes: 0, history: [] },
+            { id: 14, en: "woman", kana: "（ウーマン）", ja: "女性", mistakes: 0, history: [] },
+            { id: 15, en: "here", kana: "（ヒア）", ja: "ここ", mistakes: 0, history: [] },
+            { id: 16, en: "station", kana: "（ステーション）", ja: "駅", mistakes: 0, history: [] },
+            { id: 17, en: "family", kana: "（ファミリー）", ja: "家族", mistakes: 0, history: [] },
+            { id: 18, en: "children", kana: "（チルドレン）", ja: "こども(複数)", mistakes: 0, history: [] },
+            { id: 19, en: "clothes", kana: "（クローズ）", ja: "服", mistakes: 0, history: [] },
+            { id: 20, en: "Africa", kana: "（アフリカ）", ja: "アフリカ", mistakes: 0, history: [] },
+            { id: 21, en: "birthday", kana: "（バースデイ）", ja: "誕生日", mistakes: 0, history: [] },
+            { id: 22, en: "friends", kana: "（フレンズ）", ja: "友達(複数)", mistakes: 0, history: [] },
+            { id: 23, en: "countries", kana: "（カントリーズ）", ja: "国々", mistakes: 0, history: [] },
+            { id: 24, en: "culture", kana: "（カルチャー）", ja: "文化", mistakes: 0, history: [] },
+            { id: 25, en: "country", kana: "（カントリー）", ja: "国", mistakes: 0, history: [] },
+            { id: 26, en: "person", kana: "（パーソン）", ja: "人", mistakes: 0, history: [] },
+            { id: 27, en: "year", kana: "（イヤー）", ja: "年", mistakes: 0, history: [] },
+            { id: 28, en: "cat", kana: "（キャット）", ja: "ねこ", mistakes: 0, history: [] },
+            { id: 29, en: "ikigai", kana: "（イキガイ）", ja: "いきがい", mistakes: 0, history: [] },
+            { id: 30, en: "dog", kana: "（ドッグ）", ja: "犬", mistakes: 0, history: [] },
+            { id: 31, en: "two", kana: "（トゥー）", ja: "2", mistakes: 0, history: [] },
+            { id: 32, en: "right", kana: "（ライト）", ja: "右", mistakes: 0, history: [] },
+            { id: 33, en: "three", kana: "（スリー）", ja: "3", mistakes: 0, history: [] },
+            { id: 34, en: "city", kana: "（シティ）", ja: "都市、市", mistakes: 0, history: [] },
+            { id: 35, en: "man", kana: "（マン）", ja: "男性", mistakes: 0, history: [] },
+            { id: 36, en: "restaurant", kana: "（レストラン）", ja: "レストラン", mistakes: 0, history: [] },
+            { id: 37, en: "mother", kana: "（マザー）", ja: "母", mistakes: 0, history: [] },
+            { id: 38, en: "night", kana: "（ナイト）", ja: "夜", mistakes: 0, history: [] },
+            { id: 39, en: "work", kana: "（ワーク）", ja: "仕事", mistakes: 0, history: [] },
+            { id: 40, en: "home", kana: "（ホーム）", ja: "家、我が家", mistakes: 0, history: [] },
+            { id: 41, en: "have", kana: "（ハブ）", ja: "持っている", mistakes: 0, history: [] },
+            { id: 42, en: "do", kana: "（ドゥー）", ja: "~する", mistakes: 0, history: [] },
+            { id: 43, en: "think", kana: "（シンク）", ja: "~だと考える", mistakes: 0, history: [] },
+            { id: 44, en: "want", kana: "（ウォント）", ja: "~を望む", mistakes: 0, history: [] },
+            { id: 45, en: "like", kana: "（ライク）", ja: "~を好む", mistakes: 0, history: [] },
+            { id: 46, en: "make", kana: "（メイク）", ja: "~をつくる", mistakes: 0, history: [] },
+            { id: 47, en: "be", kana: "（ビー）", ja: "~になる", mistakes: 0, history: [] },
+            { id: 48, en: "go", kana: "（ゴー）", ja: "~に行く", mistakes: 0, history: [] },
+            { id: 49, en: "take", kana: "（テイク）", ja: "~取る、~撮る、など", mistakes: 0, history: [] },
+            { id: 50, en: "see", kana: "（シー）", ja: "~を見る", mistakes: 0, history: [] },
+            { id: 51, en: "know", kana: "（ノウ）", ja: "~を知っている", mistakes: 0, history: [] },
+            { id: 52, en: "buy", kana: "（バイ）", ja: "~を買う", mistakes: 0, history: [] },
+            { id: 53, en: "learn", kana: "（ラーン）", ja: "~を学ぶ", mistakes: 0, history: [] },
+            { id: 54, en: "get", kana: "（ゲット）", ja: "~を得る", mistakes: 0, history: [] },
+            { id: 55, en: "thank", kana: "（サンク）", ja: "感謝する", mistakes: 0, history: [] },
+            { id: 56, en: "back", kana: "（バック）", ja: "退がる、後退する", mistakes: 0, history: [] },
+            { id: 57, en: "enjoy", kana: "（エンジョイ）", ja: "~を楽しむ", mistakes: 0, history: [] },
+            { id: 58, en: "eat", kana: "（イート）", ja: "~を食べる", mistakes: 0, history: [] },
+            { id: 59, en: "try", kana: "（トライ）", ja: "~を試す", mistakes: 0, history: [] },
+            { id: 60, en: "tell", kana: "（テル）", ja: "~に伝える、言う", mistakes: 0, history: [] },
+            { id: 61, en: "need", kana: "（ニード）", ja: "~を必要とする", mistakes: 0, history: [] },
+            { id: 62, en: "speak", kana: "（スピーク）", ja: "話す", mistakes: 0, history: [] },
+            { id: 63, en: "find", kana: "（ファインド）", ja: "発見する", mistakes: 0, history: [] },
+            { id: 64, en: "help", kana: "（ヘルプ）", ja: "手伝う", mistakes: 0, history: [] },
+            { id: 65, en: "say", kana: "（セイ）", ja: "~と言う", mistakes: 0, history: [] },
+            { id: 66, en: "ask", kana: "（アスク）", ja: "~とたずねる", mistakes: 0, history: [] },
+            { id: 67, en: "use", kana: "（ユーズ）", ja: "~を使う", mistakes: 0, history: [] },
+            { id: 68, en: "live", kana: "（リブ）", ja: "住む", mistakes: 0, history: [] },
+            { id: 69, en: "study", kana: "（スタディ）", ja: "~を学ぶ", mistakes: 0, history: [] },
+            { id: 70, en: "keep", kana: "（キープ）", ja: "~に保つ", mistakes: 0, history: [] },
+            { id: 71, en: "spend", kana: "（スペンド）", ja: "費やす、過ごす", mistakes: 0, history: [] },
+            { id: 72, en: "sleep", kana: "（スリープ）", ja: "眠る", mistakes: 0, history: [] },
+            { id: 73, en: "play", kana: "（プレイ）", ja: "~をする", mistakes: 0, history: [] },
+            { id: 74, en: "hear", kana: "（ヒア）", ja: "聞く", mistakes: 0, history: [] },
+            { id: 75, en: "means", kana: "（ミーンズ）", ja: "~を意味する", mistakes: 0, history: [] },
+            { id: 76, en: "call", kana: "（コール）", ja: "~を呼ぶ", mistakes: 0, history: [] },
+            { id: 77, en: "meet", kana: "（ミート）", ja: "~と会う", mistakes: 0, history: [] },
+            { id: 78, en: "come", kana: "（カム）", ja: "~に来る", mistakes: 0, history: [] },
+            { id: 79, en: "show", kana: "（ショウ）", ja: "~を見せる", mistakes: 0, history: [] },
+            { id: 80, en: "understand", kana: "（アンダースタンド）", ja: "~を理解する", mistakes: 0, history: [] },
+            { id: 81, en: "what", kana: "（ホワット）", ja: "何が(を、に)", mistakes: 0, history: [] },
+            { id: 82, en: "so", kana: "（ソー）", ja: "だから、それで", mistakes: 0, history: [] },
+            { id: 83, en: "when", kana: "（ウェン）", ja: "いつ、~するとき", mistakes: 0, history: [] },
+            { id: 84, en: "there", kana: "（ゼア）", ja: "そこには", mistakes: 0, history: [] },
+            { id: 85, en: "more", kana: "（モア）", ja: "もっと、さらに", mistakes: 0, history: [] },
+            { id: 86, en: "very", kana: "（ベリー）", ja: "とても", mistakes: 0, history: [] },
+            { id: 87, en: "not", kana: "（ノット）", ja: "ない", mistakes: 0, history: [] },
+            { id: 88, en: "now", kana: "（ナウ）", ja: "今、現在", mistakes: 0, history: [] },
+            { id: 89, en: "too", kana: "（トゥー）", ja: "あまりにも", mistakes: 0, history: [] },
+            { id: 90, en: "after", kana: "（アフター）", ja: "後", mistakes: 0, history: [] },
+            { id: 91, en: "why", kana: "（ホワイ）", ja: "なぜ", mistakes: 0, history: [] },
+            { id: 92, en: "always", kana: "（オールウェイズ）", ja: "いつも", mistakes: 0, history: [] },
+            { id: 93, en: "often", kana: "（オフトゥン）", ja: "よく、しばしば", mistakes: 0, history: [] },
+            { id: 94, en: "which", kana: "（ウィッチ）", ja: "どちら/どっち", mistakes: 0, history: [] },
+            { id: 95, en: "who", kana: "（フー）", ja: "だれ", mistakes: 0, history: [] },
+            { id: 96, en: "only", kana: "（オンリー）", ja: "唯一、ただ一つ", mistakes: 0, history: [] },
+            { id: 97, en: "where", kana: "（ウェア）", ja: "どこ", mistakes: 0, history: [] },
+            { id: 98, en: "please", kana: "（プリーズ）", ja: "お願いします", mistakes: 0, history: [] },
+            { id: 99, en: "away", kana: "（アウェイ）", ja: "遠くへ", mistakes: 0, history: [] },
+            { id: 100, en: "well", kana: "（ウェル）", ja: "よく、上手に", mistakes: 0, history: [] },
+            { id: 101, en: "before", kana: "（ビフォア）", ja: "前", mistakes: 0, history: [] },
+            { id: 102, en: "really", kana: "（リアリー）", ja: "本当に", mistakes: 0, history: [] },
+            { id: 103, en: "then", kana: "（ゼン）", ja: "それから", mistakes: 0, history: [] },
+            { id: 104, en: "each", kana: "（イーチ）", ja: "それぞれの", mistakes: 0, history: [] },
+            { id: 105, en: "most", kana: "（モスト）", ja: "もっとも", mistakes: 0, history: [] },
+            { id: 106, en: "around", kana: "（アラウンド）", ja: "~のまわりの", mistakes: 0, history: [] },
+            { id: 107, en: "better", kana: "（ベター）", ja: "よりよい", mistakes: 0, history: [] },
+            { id: 108, en: "soon", kana: "（スーン）", ja: "まもなく、すぐに", mistakes: 0, history: [] },
+            { id: 109, en: "hard", kana: "（ハード）", ja: "懸命に", mistakes: 0, history: [] },
+            { id: 110, en: "ago", kana: "（アゴー）", ja: "~から前に", mistakes: 0, history: [] },
+            { id: 111, en: "again", kana: "（アゲイン）", ja: "再び、もう一度", mistakes: 0, history: [] },
+            { id: 112, en: "enough", kana: "（イナフ）", ja: "充分に", mistakes: 0, history: [] },
+            { id: 113, en: "easily", kana: "（イージリー）", ja: "簡単に", mistakes: 0, history: [] },
+            { id: 114, en: "together", kana: "（トゥギャザー）", ja: "一緒に", mistakes: 0, history: [] },
+            { id: 115, en: "just", kana: "（ジャスト）", ja: "ちょうど", mistakes: 0, history: [] },
+            { id: 116, en: "never", kana: "（ネバー）", ja: "決して~ない", mistakes: 0, history: [] },
+            { id: 117, en: "even", kana: "（イーブン）", ja: "~でさえ", mistakes: 0, history: [] },
+            { id: 118, en: "near", kana: "（ニア）", ja: "近くに", mistakes: 0, history: [] },
+            { id: 119, en: "however", kana: "（ハウエバー）", ja: "しかしながら", mistakes: 0, history: [] },
+            { id: 120, en: "usually", kana: "（ユージュアリー）", ja: "たいてい", mistakes: 0, history: [] },
+            { id: 121, en: "many", kana: "（メニー）", ja: "たくさんの", mistakes: 0, history: [] },
+            { id: 122, en: "good", kana: "（グッド）", ja: "良い", mistakes: 0, history: [] },
+            { id: 123, en: "some", kana: "（サム）", ja: "いくつかの~", mistakes: 0, history: [] },
+            { id: 124, en: "other", kana: "（アザー）", ja: "他の", mistakes: 0, history: [] },
+            { id: 125, en: "new", kana: "（ニュー）", ja: "新しい", mistakes: 0, history: [] },
+            { id: 126, en: "all", kana: "（オール）", ja: "すべて", mistakes: 0, history: [] },
+            { id: 127, en: "next", kana: "（ネクスト）", ja: "次の", mistakes: 0, history: [] },
+            { id: 128, en: "happy", kana: "（ハッピー）", ja: "うれしい", mistakes: 0, history: [] },
+            { id: 129, en: "last", kana: "（ラスト）", ja: "最後の", mistakes: 0, history: [] },
+            { id: 130, en: "much", kana: "（マッチ）", ja: "たくさん(不可算名詞が)", mistakes: 0, history: [] },
+            { id: 131, en: "long", kana: "（ロング）", ja: "長い", mistakes: 0, history: [] },
+            { id: 132, en: "difficult", kana: "（ディフィカルト）", ja: "難しい", mistakes: 0, history: [] },
+            { id: 133, en: "fast", kana: "（ファスト）", ja: "速い、素早い", mistakes: 0, history: [] },
+            { id: 134, en: "old", kana: "（オールド）", ja: "古い、年老いた", mistakes: 0, history: [] },
+            { id: 135, en: "important", kana: "（インポータント）", ja: "重要な", mistakes: 0, history: [] },
+            { id: 136, en: "every", kana: "（エブリー）", ja: "毎、ごと", mistakes: 0, history: [] },
+            { id: 137, en: "different", kana: "（ディファレント）", ja: "違う、異なる", mistakes: 0, history: [] },
+            { id: 138, en: "sure", kana: "（シュア）", ja: "確信して", mistakes: 0, history: [] },
+            { id: 139, en: "interested", kana: "（インタレスティド）", ja: "興味を持った", mistakes: 0, history: [] },
+            { id: 140, en: "big", kana: "（ビッグ）", ja: "大きい", mistakes: 0, history: [] },
+            { id: 141, en: "internationally-minded", kana: "（インターナショナリー・マインディッド）", ja: "国際感覚のある", mistakes: 0, history: [] },
+            { id: 142, en: "international", kana: "（インターナショナル）", ja: "国際的な", mistakes: 0, history: [] },
+            { id: 143, en: "beautiful", kana: "（ビューティフル）", ja: "美しい", mistakes: 0, history: [] },
+            { id: 144, en: "sorry", kana: "（ソーリー）", ja: "気の毒で、", mistakes: 0, history: [] },
+            { id: 145, en: "favorite", kana: "（フェイバリット）", ja: "お気に入りの", mistakes: 0, history: [] },
+            { id: 146, en: "special", kana: "（スペシャル）", ja: "特別", mistakes: 0, history: [] },
+            { id: 147, en: "hot", kana: "（ホット）", ja: "暑い、熱い", mistakes: 0, history: [] },
+            { id: 148, en: "kind", kana: "（カインド）", ja: "親切な", mistakes: 0, history: [] },
+            { id: 149, en: "great", kana: "（グレイト）", ja: "すばらしい、偉大な", mistakes: 0, history: [] },
+            { id: 150, en: "surprised", kana: "（サプライズド）", ja: "驚いた", mistakes: 0, history: [] },
+            { id: 151, en: "cool", kana: "（クール）", ja: "涼しい", mistakes: 0, history: [] },
+            { id: 152, en: "interesting", kana: "（インタレスティング）", ja: "興味深い", mistakes: 0, history: [] },
+            { id: 153, en: "same", kana: "（セイム）", ja: "同じ", mistakes: 0, history: [] },
+            { id: 154, en: "small", kana: "（スモール）", ja: "小さい", mistakes: 0, history: [] },
+            { id: 155, en: "nice", kana: "（ナイス）", ja: "よい、親切な", mistakes: 0, history: [] },
+            { id: 156, en: "easy", kana: "（イージー）", ja: "簡単、易しい", mistakes: 0, history: [] },
+            { id: 157, en: "glad", kana: "（グラッド）", ja: "うれしい", mistakes: 0, history: [] },
+            { id: 158, en: "early", kana: "（アーリー）", ja: "早い(時刻)", mistakes: 0, history: [] },
+            { id: 159, en: "famous", kana: "（フェイマス）", ja: "有名な", mistakes: 0, history: [] },
+            { id: 160, en: "popular", kana: "（ポピュラー）", ja: "人気のある", mistakes: 0, history: [] },
+            { id: 161, en: "sun", kana: "（サン）", ja: "太陽", mistakes: 0, history: [] },
+            { id: 162, en: "word", kana: "（ワード）", ja: "語", mistakes: 0, history: [] },
+            { id: 163, en: "christmas", kana: "（クリスマス）", ja: "クリスマス", mistakes: 0, history: [] },
+            { id: 164, en: "fashion", kana: "（ファッション）", ja: "流行", mistakes: 0, history: [] },
+            { id: 165, en: "center", kana: "（センター）", ja: "中央、中心", mistakes: 0, history: [] },
+            { id: 166, en: "kinds", kana: "（カインズ）", ja: "種類", mistakes: 0, history: [] },
+            { id: 167, en: "today", kana: "（トゥデイ）", ja: "今日", mistakes: 0, history: [] },
+            { id: 168, en: "party", kana: "（パーティ）", ja: "パーティ、党", mistakes: 0, history: [] },
+            { id: 169, en: "festival", kana: "（フェスティバル）", ja: "祭り", mistakes: 0, history: [] },
+            { id: 170, en: "number", kana: "（ナンバー）", ja: "番号", mistakes: 0, history: [] },
+            { id: 171, en: "morning", kana: "（モーニング）", ja: "朝", mistakes: 0, history: [] },
+            { id: 172, en: "bus", kana: "（バス）", ja: "バス", mistakes: 0, history: [] },
+            { id: 173, en: "lunch", kana: "（ランチ）", ja: "昼食", mistakes: 0, history: [] },
+            { id: 174, en: "picture", kana: "（ピクチャー）", ja: "写真、絵画", mistakes: 0, history: [] },
+            { id: 175, en: "cafe", kana: "（カフェ）", ja: "カフェ", mistakes: 0, history: [] },
+            { id: 176, en: "water", kana: "（ウォーター）", ja: "水", mistakes: 0, history: [] },
+            { id: 177, en: "Canada", kana: "（カナダ）", ja: "カナダ", mistakes: 0, history: [] },
+            { id: 178, en: "team", kana: "（チーム）", ja: "チーム", mistakes: 0, history: [] },
+            { id: 179, en: "shop", kana: "（ショップ）", ja: "お店", mistakes: 0, history: [] },
+            { id: 180, en: "ring", kana: "（リング）", ja: "指輪", mistakes: 0, history: [] },
+            { id: 181, en: "t-shirt", kana: "（ティーシャツ）", ja: "Tシャツ", mistakes: 0, history: [] },
+            { id: 182, en: "player", kana: "（プレイヤー）", ja: "選手、奏者", mistakes: 0, history: [] },
+            { id: 183, en: "space", kana: "（スペース）", ja: "空間", mistakes: 0, history: [] },
+            { id: 184, en: "shopping", kana: "（ショッピング）", ja: "買い物", mistakes: 0, history: [] },
+            { id: 185, en: "park", kana: "（パーク）", ja: "公園", mistakes: 0, history: [] },
+            { id: 186, en: "grandmother", kana: "（グランドマザー）", ja: "祖母", mistakes: 0, history: [] },
+            { id: 187, en: "week", kana: "（ウィーク）", ja: "週", mistakes: 0, history: [] },
+            { id: 188, en: "future", kana: "（フューチャー）", ja: "将来、未来", mistakes: 0, history: [] },
+            { id: 189, en: "life", kana: "（ライフ）", ja: "生命、生活", mistakes: 0, history: [] },
+            { id: 190, en: "idea", kana: "（アイディア）", ja: "アイデア/考え", mistakes: 0, history: [] },
+            { id: 191, en: "dinner", kana: "（ディナー）", ja: "夕食", mistakes: 0, history: [] },
+            { id: 192, en: "lake", kana: "（レイク）", ja: "みずうみ", mistakes: 0, history: [] },
+            { id: 193, en: "sky", kana: "（スカイ）", ja: "空", mistakes: 0, history: [] },
+            { id: 194, en: "game", kana: "（ゲーム）", ja: "試合", mistakes: 0, history: [] },
+            { id: 195, en: "table", kana: "（テーブル）", ja: "テーブル", mistakes: 0, history: [] },
+            { id: 196, en: "thing", kana: "（シング）", ja: "もの、こと", mistakes: 0, history: [] },
+            { id: 197, en: "train", kana: "（トレイン）", ja: "電車", mistakes: 0, history: [] },
+            { id: 198, en: "house", kana: "（ハウス）", ja: "家", mistakes: 0, history: [] },
+            { id: 199, en: "forest", kana: "（フォレスト）", ja: "森", mistakes: 0, history: [] },
+            { id: 200, en: "fish", kana: "（フィッシュ）", ja: "魚", mistakes: 0, history: [] },
+            { id: 201, en: "read", kana: "（リード）", ja: "~を読む", mistakes: 0, history: [] },
+            { id: 202, en: "stay", kana: "（ステイ）", ja: "滞在する", mistakes: 0, history: [] },
+            { id: 203, en: "give", kana: "（ギブ）", ja: "~を与える", mistakes: 0, history: [] },
+            { id: 204, en: "cook", kana: "（クック）", ja: "~を料理する", mistakes: 0, history: [] },
+            { id: 205, en: "talk", kana: "（トーク）", ja: "話す", mistakes: 0, history: [] },
+            { id: 206, en: "remember", kana: "（リメンバー）", ja: "~を思い出す、覚える", mistakes: 0, history: [] },
+            { id: 207, en: "visit", kana: "（ビジット）", ja: "尋ねる", mistakes: 0, history: [] },
+            { id: 208, en: "hope", kana: "（ホープ）", ja: "~を望む", mistakes: 0, history: [] },
+            { id: 209, en: "dance", kana: "（ダンス）", ja: "踊る", mistakes: 0, history: [] },
+            { id: 210, en: "rain", kana: "（レイン）", ja: "雨が降る", mistakes: 0, history: [] },
+            { id: 211, en: "look", kana: "（ルック）", ja: "見る、~に見える", mistakes: 0, history: [] },
+            { id: 212, en: "drink", kana: "（ドリンク）", ja: "飲む/飲み物", mistakes: 0, history: [] },
+            { id: 213, en: "become", kana: "（ビカム）", ja: "~になる", mistakes: 0, history: [] },
+            { id: 214, en: "choose", kana: "（チューズ）", ja: "選ぶ", mistakes: 0, history: [] },
+            { id: 215, en: "care", kana: "（ケア）", ja: "~の世話をする", mistakes: 0, history: [] },
+            { id: 216, en: "join", kana: "（ジョイン）", ja: "~に加わる", mistakes: 0, history: [] },
+            { id: 217, en: "love", kana: "（ラブ）", ja: "~を愛する", mistakes: 0, history: [] },
+            { id: 218, en: "mean", kana: "（ミーン）", ja: "意味する", mistakes: 0, history: [] },
+            { id: 219, en: "clean", kana: "（クリーン）", ja: "掃除する", mistakes: 0, history: [] },
+            { id: 220, en: "feel", kana: "（フィール）", ja: "~を感じる", mistakes: 0, history: [] },
+            { id: 221, en: "open", kana: "（オープン）", ja: "開ける/開く", mistakes: 0, history: [] },
+            { id: 222, en: "slide", kana: "（スライド）", ja: "滑る", mistakes: 0, history: [] },
+            { id: 223, en: "send", kana: "（センド）", ja: "~を送る、送信する", mistakes: 0, history: [] },
+            { id: 224, en: "watch", kana: "（ウォッチ）", ja: "見る", mistakes: 0, history: [] },
+            { id: 225, en: "change", kana: "（チェンジ）", ja: "~を変える", mistakes: 0, history: [] },
+            { id: 226, en: "put", kana: "（プット）", ja: "~を置く", mistakes: 0, history: [] },
+            { id: 227, en: "step", kana: "（ステップ）", ja: "踏み出す", mistakes: 0, history: [] },
+            { id: 228, en: "throw", kana: "（スロウ）", ja: "投げる", mistakes: 0, history: [] },
+            { id: 229, en: "practice", kana: "（プラクティス）", ja: "練習", mistakes: 0, history: [] },
+            { id: 230, en: "bring", kana: "（ブリング）", ja: "持ってくる", mistakes: 0, history: [] },
+            { id: 231, en: "decide", kana: "（ディサイド）", ja: "決める", mistakes: 0, history: [] },
+            { id: 232, en: "write", kana: "（ライト）", ja: "書く", mistakes: 0, history: [] },
+            { id: 233, en: "set", kana: "（セット）", ja: "~を揃える、整える", mistakes: 0, history: [] },
+            { id: 234, en: "build", kana: "（ビルド）", ja: "~を建てる", mistakes: 0, history: [] },
+            { id: 235, en: "leave", kana: "（リーブ）", ja: "~を出発する", mistakes: 0, history: [] },
+            { id: 236, en: "sell", kana: "（セル）", ja: "~を売る", mistakes: 0, history: [] },
+            { id: 237, en: "sit", kana: "（シット）", ja: "座る", mistakes: 0, history: [] },
+            { id: 238, en: "start", kana: "（スタート）", ja: "始める", mistakes: 0, history: [] },
+            { id: 239, en: "break", kana: "（ブレイク）", ja: "~を壊す", mistakes: 0, history: [] },
+            { id: 240, en: "wear", kana: "（ウェア）", ja: "~を着る", mistakes: 0, history: [] }
+        ];
+
+        let wordData = [...initialWordList];
+        
+        let learningMode = 'all'; 
+        
+        let orderStates = {
+            all: { indices: [], currentIndex: 0 },
+            review: { indices: [], currentIndex: 0 }
+        };
+        
+        let sessionCount = 0; 
+        const SESSION_LIMIT = 30; // 30問で区切る
+
+        let isFlipped = false;
+        let currentSort = { key: 'mistakes', order: 'desc' };
+        let unsubscribe = null;
+        let syncCode = localStorage.getItem('kouki_flashcards_sync_code') || localStorage.getItem('flashcards_sync_code') || 'kouki0827';
+        let isSyncing = false; 
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'flashcards-app-v3-240';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "AIzaSyDemoKeyOnlyForFallback123456",
+                authDomain: "demo-app.firebaseapp.com",
+                projectId: "demo-app",
+                storageBucket: "demo-app.appspot.com",
+                messagingSenderId: "1234567890",
+                appId: "1:1234567890:web:1234567890"
+            };
+
+        let app = null;
+        let auth = null;
+        let db = null;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.warn("Firebase initialize skipped or failed:", e);
+        }
+
+        // ローカルストレージからの履歴読み込み（オフライン・ローカル完全対応）
+        function loadSavedLocalProgress() {
+            try {
+                const saved = localStorage.getItem('koki_progress_' + syncCode);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed)) {
+                        wordData = initialWordList.map(item => {
+                            const found = parsed.find(p => p.id === item.id);
+                            return found ? { ...item, mistakes: found.mistakes || 0, history: found.history || [] } : item;
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn("Failed to load local progress:", e);
+            }
+        }
+
+        function saveLocalProgress() {
+            try {
+                const progress = wordData
+                    .filter(w => w.mistakes > 0 || (w.history && w.history.length > 0))
+                    .map(w => ({ id: w.id, mistakes: w.mistakes, history: w.history }));
+                localStorage.setItem('koki_progress_' + syncCode, JSON.stringify(progress));
+            } catch (e) {
+                console.warn("Failed to save local progress:", e);
+            }
+        }
+
+        async function setupCloudSync() {
+            try {
+                if (!auth || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("DemoKeyOnly")) {
+                    throw new Error("Local mode active (No production Firebase Config)");
+                }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                document.getElementById('sync-code-input').value = syncCode;
+                subscribeToSyncData();
+            } catch (err) {
+                console.log("Running in local storage mode:", err.message || err);
+                loadLocalData();
+            }
+        }
+
+        function subscribeToSyncData() {
+            if (!db || !auth || !auth.currentUser) return;
+            if (unsubscribe) unsubscribe();
+
+            const syncDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'flashcard_progress_v3_240', syncCode);
+            document.getElementById('sync-status').classList.remove('hidden');
+
+            unsubscribe = onSnapshot(syncDocRef, (docSnap) => {
+                isSyncing = true;
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    
+                    if (data.progress) {
+                        wordData = initialWordList.map(item => {
+                            const saved = data.progress.find(p => p.id === item.id);
+                            return saved ? { ...item, mistakes: saved.mistakes || 0, history: saved.history || [] } : item;
+                        });
+                        saveLocalProgress();
+                    }
+
+                    if (data.orderStates && data.orderStates.all && data.orderStates.all.indices && data.orderStates.all.indices.length === wordData.length) {
+                        orderStates = data.orderStates;
+                    } else if (data.orderState && data.orderState.shuffledIndices) {
+                        orderStates.all.indices = data.orderState.shuffledIndices;
+                        orderStates.all.currentIndex = data.orderState.currentOrderIndex || 0;
+                    } else {
+                        if (orderStates.all.indices.length === 0) initShuffle('all');
+                    }
+                    
+                    if (learningMode === 'review' && wordData.filter(w => w.mistakes > 0).length === 0) {
+                        learningMode = 'all';
+                        updateModeUI();
+                    }
+
+                } else {
+                    if (orderStates.all.indices.length === 0) initShuffle('all');
+                    saveCloudData();
+                }
+                showCard();
+                updateList();
+                isSyncing = false;
+            }, (error) => {
+                console.error("Firestore sync error:", error);
+                isSyncing = false;
+            });
+        }
+
+        async function saveCloudData() {
+            saveLocalProgress();
+            if (!auth || !auth.currentUser || !db || isSyncing) return;
+            
+            const progress = wordData
+                .filter(w => w.mistakes > 0 || w.history.length > 0)
+                .map(w => ({ id: w.id, mistakes: w.mistakes, history: w.history }));
+                
+            const syncDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'flashcard_progress_v3_240', syncCode);
+            
+            try {
+                await setDoc(syncDocRef, { progress, orderStates, updatedAt: new Date().toISOString() }, { merge: true });
+            } catch (err) {
+                console.warn("Failed to save to cloud:", err);
+            }
+        }
+
+        function loadLocalData() {
+            document.getElementById('sync-code-input').value = syncCode;
+            loadSavedLocalProgress();
+            if (orderStates.all.indices.length === 0) initShuffle('all');
+            if (orderStates.review.indices.length === 0) initShuffle('review');
+            showCard();
+        }
+
+        window.changeSyncCode = function() {
+            const inputVal = document.getElementById('sync-code-input').value.trim();
+            if (!inputVal) return;
+            syncCode = inputVal;
+            localStorage.setItem('flashcards_sync_code', syncCode);
+            localStorage.setItem('kouki_flashcards_sync_code', syncCode);
+            loadSavedLocalProgress();
+            initShuffle('all');
+            initShuffle('review');
+            showCard();
+            if (auth && auth.currentUser) {
+                subscribeToSyncData();
+            }
+        };
+
+        const cardInner = document.getElementById('card-inner');
+        const wordEnEl = document.getElementById('word-en');
+        const wordKanaEl = document.getElementById('word-kana');
+        const wordJaEl = document.getElementById('word-ja');
+        const frontMistakeCountEl = document.getElementById('front-mistake-count');
+        const frontMistakeNumberEl = document.getElementById('front-mistake-number');
+        const backMistakeCountEl = document.getElementById('back-mistake-count');
+        const backMistakeNumberEl = document.getElementById('back-mistake-number');
+        const judgmentControlsEl = document.getElementById('judgment-controls');
+        const currentIndexDisplay = document.getElementById('current-index-display');
+        const totalWordsDisplay = document.getElementById('total-words-display');
+        const sessionCountDisplay = document.getElementById('session-count-display');
+
+        function initShuffle(mode) {
+            let indices = [];
+            if (mode === 'all') {
+                indices = Array.from({ length: wordData.length }, (_, i) => i);
+            } else if (mode === 'review') {
+                wordData.forEach((w, i) => { if (w.mistakes > 0) indices.push(i); });
+            }
+
+            for (let i = indices.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indices[i], indices[j]] = [indices[j], indices[i]];
+            }
+            orderStates[mode].indices = indices;
+            orderStates[mode].currentIndex = 0;
+        }
+
+        function updateModeUI() {
+            const btnAll = document.getElementById('mode-all-btn');
+            const btnReview = document.getElementById('mode-review-btn');
+            
+            if (learningMode === 'all') {
+                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm bg-white text-blue-700 shadow transition-all duration-200";
+                btnReview.className = "px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200";
+            } else {
+                btnReview.className = "px-6 py-2 rounded-full font-bold text-sm bg-white text-red-600 shadow transition-all duration-200";
+                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200";
+            }
+        }
+
+        window.setMode = function(mode) {
+            if (mode === 'review') {
+                const hasMistakes = wordData.some(w => w.mistakes > 0);
+                if (!hasMistakes) {
+                    showModal('alert', '×がついた単語がありません。素晴らしい！🎉', 'OK', closeModal);
+                    return;
+                }
+            }
+            
+            learningMode = mode;
+            updateModeUI();
+            
+            if (orderStates[mode].indices.length === 0) {
+                initShuffle(mode);
+            }
+            
+            showCard();
+        };
+
+        function showCard() {
+            const state = orderStates[learningMode];
+            if (!state || state.indices.length === 0) {
+                if (learningMode === 'review') {
+                    initShuffle('review');
+                    if (orderStates.review.indices.length === 0) {
+                        setMode('all');
+                        return;
+                    }
+                } else {
+                    initShuffle('all');
+                }
+            }
+            
+            const realIndex = state.indices[state.currentIndex];
+            const word = wordData[realIndex];
+            if (!word) return;
+            
+            wordEnEl.textContent = word.en;
+            wordKanaEl.textContent = word.kana;
+            wordJaEl.textContent = word.ja;
+            
+            if (word.en.length > 15) {
+                wordEnEl.classList.replace('text-4xl', 'text-2xl');
+                wordEnEl.classList.replace('md:text-5xl', 'md:text-3xl');
+            } else {
+                wordEnEl.classList.replace('text-2xl', 'text-4xl');
+                wordEnEl.classList.replace('md:text-3xl', 'md:text-5xl');
+            }
+
+            currentIndexDisplay.textContent = state.currentIndex + 1;
+            totalWordsDisplay.textContent = state.indices.length;
+            sessionCountDisplay.textContent = sessionCount;
+
+            if (word.mistakes > 0) {
+                frontMistakeNumberEl.textContent = word.mistakes;
+                backMistakeNumberEl.textContent = word.mistakes;
+                frontMistakeCountEl.classList.remove('hidden');
+                backMistakeCountEl.classList.remove('hidden');
+            } else {
+                frontMistakeCountEl.classList.add('hidden');
+                backMistakeCountEl.classList.add('hidden');
+            }
+
+            if (isFlipped) {
+                cardInner.classList.remove('rotate-y-180');
+                isFlipped = false;
+            }
+            judgmentControlsEl.classList.add('hidden');
+            document.getElementById('flip-btn').classList.remove('hidden');
+        }
+
+        window.flipCard = function() {
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                cardInner.classList.add('rotate-y-180');
+                document.getElementById('flip-btn').classList.add('hidden');
+                setTimeout(() => {
+                    judgmentControlsEl.classList.remove('hidden');
+                }, 150);
+            }
+        };
+
+        window.judge = function(isCorrect, event) {
+            if (event) event.stopPropagation(); 
+
+            const state = orderStates[learningMode];
+            const realIndex = state.indices[state.currentIndex];
+            const word = wordData[realIndex];
+            
+            // 直近5回分の履歴のみ保持
+            const historyMark = isCorrect ? '〇' : '×';
+            word.history.push(historyMark);
+            if (word.history.length > 5) {
+                word.history.shift();
+            }
+
+            if (!isCorrect) {
+                word.mistakes += 1;
+            }
+
+            sessionCount++;
+            
+            state.currentIndex++;
+            if (state.currentIndex >= state.indices.length) {
+                initShuffle(learningMode); 
+            }
+            
+            saveCloudData();
+
+            // 30問区切り
+            if (sessionCount >= SESSION_LIMIT) {
+                showModal('session', `🎉 ${SESSION_LIMIT}問クリアしました！\nお疲れ様です。少し休憩しますか？`, 'このまま続ける', () => {
+                    sessionCount = 0;
+                    closeModal();
+                    showCard();
+                }, '休んで一覧を見る', () => {
+                    sessionCount = 0;
+                    closeModal();
+                    switchTab('list');
+                });
+            } else {
+                showCard();
+            }
+        };
+
+        document.addEventListener('keydown', function(event) {
+            if (document.getElementById('flashcard-area').classList.contains('hidden')) return;
+            if (document.getElementById('unified-modal').classList.contains('hidden') === false) return;
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                if (isFlipped) return; 
+                flipCard();
+            }
+        });
+
+        window.switchTab = function(tabId) {
+            const flashcardArea = document.getElementById('flashcard-area');
+            const listArea = document.getElementById('list-area');
+            const tabFlashcard = document.getElementById('tab-flashcard');
+            const tabList = document.getElementById('tab-list');
+
+            if (tabId === 'flashcard') {
+                flashcardArea.classList.remove('hidden');
+                flashcardArea.classList.add('flex');
+                listArea.classList.add('hidden');
+                listArea.classList.remove('flex');
+                
+                tabFlashcard.classList.replace('bg-white', 'bg-blue-600');
+                tabFlashcard.classList.replace('text-gray-700', 'text-white');
+                tabList.classList.replace('bg-blue-600', 'bg-white');
+                tabList.classList.replace('text-white', 'text-gray-700');
+                showCard();
+            } else {
+                flashcardArea.classList.add('hidden');
+                flashcardArea.classList.remove('flex');
+                listArea.classList.remove('hidden');
+                listArea.classList.add('flex');
+
+                tabList.classList.replace('bg-white', 'bg-blue-600');
+                tabList.classList.replace('text-gray-700', 'text-white');
+                tabFlashcard.classList.replace('bg-blue-600', 'bg-white');
+                tabFlashcard.classList.replace('text-white', 'text-gray-700');
+                
+                updateList();
+            }
+        };
+
+        function updateList() {
+            const tbody = document.getElementById('mistake-list-body');
+            const noMsg = document.getElementById('no-mistakes-msg');
+            tbody.innerHTML = '';
+
+            let mistakeWords = wordData.filter(word => word.mistakes > 0);
+
+            if (mistakeWords.length === 0) {
+                document.querySelector('table').classList.add('hidden');
+                noMsg.classList.remove('hidden');
+                return;
+            } else {
+                document.querySelector('table').classList.remove('hidden');
+                noMsg.classList.add('hidden');
+            }
+
+            mistakeWords.sort((a, b) => {
+                let valA = a[currentSort.key];
+                let valB = b[currentSort.key];
+                
+                if (currentSort.key === 'mistakes') {
+                    return currentSort.order === 'asc' ? valA - valB : valB - valA;
+                } else {
+                    if (valA < valB) return currentSort.order === 'asc' ? -1 : 1;
+                    if (valA > valB) return currentSort.order === 'asc' ? 1 : -1;
+                    return 0;
+                }
+            });
+
+            ['en', 'ja', 'mistakes'].forEach(key => {
+                document.getElementById(`sort-icon-${key}`).textContent = '';
+            });
+            document.getElementById(`sort-icon-${currentSort.key}`).textContent = currentSort.order === 'asc' ? '▲' : '▼';
+
+            mistakeWords.forEach(word => {
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-100 hover:bg-blue-50 transition-colors";
+                
+                const historyHtml = (word.history || []).map(mark => 
+                    mark === '〇' ? '<span class="text-green-500 font-bold mx-1">〇</span>' : '<span class="text-red-500 font-bold mx-1">×</span>'
+                ).join('');
+
+                tr.innerHTML = `
+                    <td class="px-5 py-4 text-sm font-bold text-gray-800">${word.en}</td>
+                    <td class="px-5 py-4 text-sm text-gray-600">${word.ja}</td>
+                    <td class="px-5 py-4 text-sm">
+                        <div class="font-bold text-red-500 mb-1">累計: × ${word.mistakes}回</div>
+                        <div class="text-xs bg-gray-50 p-1 rounded inline-block border border-gray-200">
+                            最近: ${historyHtml || '<span class="text-gray-400">記録なし</span>'}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        window.sortTable = function(key) {
+            if (currentSort.key === key) {
+                currentSort.order = currentSort.order === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.key = key;
+                currentSort.order = key === 'mistakes' ? 'desc' : 'asc';
+            }
+            updateList();
+        };
+
+        function showModal(type, message, btn1Text, btn1Action, btn2Text = null, btn2Action = null) {
+            const modal = document.getElementById('unified-modal');
+            const msgEl = document.getElementById('modal-message');
+            const btn1 = document.getElementById('modal-btn-primary');
+            const btn2 = document.getElementById('modal-btn-secondary');
+            
+            msgEl.innerHTML = message.replace(/\n/g, '<br>');
+            
+            btn1.textContent = btn1Text;
+            btn1.onclick = btn1Action;
+            
+            if (btn2Text) {
+                btn2.textContent = btn2Text;
+                btn2.classList.remove('hidden');
+                btn2.onclick = btn2Action;
+            } else {
+                btn2.classList.add('hidden');
+            }
+            
+            if (type === 'danger') {
+                btn1.classList.replace('bg-blue-600', 'bg-red-600');
+                btn1.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
+                btn1.classList.replace('focus:ring-blue-300', 'focus:ring-red-300');
+            } else {
+                btn1.classList.replace('bg-red-600', 'bg-blue-600');
+                btn1.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
+                btn1.classList.replace('focus:ring-red-300', 'focus:ring-blue-300');
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        window.closeModal = function() {
+            document.getElementById('unified-modal').classList.add('hidden');
+        };
+
+        window.initiateReset = function() {
+            showModal('danger', 'すべての単語の正誤履歴をリセットしてよろしいですか？\nこの操作は元に戻せません。', 'はい、リセットします', () => {
+                showModal('danger', '本当にリセットしてよろしいですか？\n（合言葉が同じ他の端末の履歴も消えます）', '最終確認：リセットする', () => {
+                    executeReset();
+                    closeModal();
+                }, 'キャンセル', closeModal);
+            }, 'キャンセル', closeModal);
+        };
+
+        function executeReset() {
+            wordData.forEach(word => {
+                word.mistakes = 0;
+                word.history = [];
+            });
+            sessionCount = 0;
+            learningMode = 'all';
+            updateModeUI();
+            initShuffle('all');
+            initShuffle('review');
+            saveCloudData();
+            showCard();
+            if(!document.getElementById('list-area').classList.contains('hidden')){
+                updateList();
+            }
+        }
+
+        window.onload = function() {
+            totalWordsDisplay.textContent = wordData.length;
+            setupCloudSync();
+        };
+    </script>
+</body>
+</html>
