@@ -148,14 +148,18 @@
         </div>
 
         <div id="unified-modal" class="fixed inset-0 bg-gray-900 bg-opacity-60 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity">
-            <div class="bg-white rounded-2xl shadow-2xl p-8 w-11/12 max-w-sm transform transition-all scale-100">
-                <h3 id="modal-title" class="text-2xl font-bold text-gray-800 mb-4 text-center hidden"></h3>
-                <p id="modal-message" class="text-lg font-medium text-gray-600 mb-8 text-center leading-relaxed"></p>
+            <div class="bg-white rounded-3xl shadow-2xl p-8 w-11/12 max-w-sm transform transition-all scale-100 border border-orange-100">
+                <h3 id="modal-title" class="text-xl font-bold text-gray-800 mb-3 text-center hidden"></h3>
+                <p id="modal-message" class="text-base font-medium text-gray-600 mb-6 text-center leading-relaxed"></p>
+                <div id="modal-input-container" class="hidden mb-6">
+                    <input type="text" id="modal-input" class="w-full px-3 py-2 border-2 border-orange-300 rounded-xl text-center font-mono font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="同期コードを入力" />
+                    <p id="modal-input-error" class="text-xs text-rose-500 font-bold mt-2 text-center hidden"></p>
+                </div>
                 <div id="modal-btn-container" class="flex flex-col gap-3">
-                    <button id="modal-btn-primary" class="w-full py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 font-bold transition-colors text-lg shadow-sm">
+                    <button id="modal-btn-primary" class="w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-300 font-bold transition-all text-lg shadow-sm">
                         プライマリ
                     </button>
-                    <button id="modal-btn-secondary" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-300 font-bold transition-colors shadow-sm hidden">
+                    <button id="modal-btn-secondary" class="w-full py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-300 font-bold transition-all shadow-sm hidden">
                         セカンダリ
                     </button>
                 </div>
@@ -545,29 +549,36 @@
         }
 
         async function setupCloudSync() {
+            if (!syncCode) {
+                const statusEl = document.getElementById('sync-status');
+                if (statusEl) statusEl.classList.add('hidden');
+                return;
+            }
             try {
-                if (!auth || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("DemoKeyOnly")) {
-                    throw new Error("Local mode active (No production Firebase Config)");
+                if (!app) {
+                    app = initializeApp(firebaseConfig);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
                 }
+
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-                document.getElementById('sync-code-input').value = syncCode;
                 subscribeToSyncData();
             } catch (err) {
-                console.log("Running in local storage mode:", err.message || err);
-                loadLocalData();
+                console.warn("Cloud sync init failed, running in pure local mode:", err);
             }
         }
 
         function subscribeToSyncData() {
-            if (!db || !auth || !auth.currentUser) return;
+            if (!db || !syncCode) return;
             if (unsubscribe) unsubscribe();
 
             const syncDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'flashcard_progress_v3_240', syncCode);
-            document.getElementById('sync-status').classList.remove('hidden');
+            const statusEl = document.getElementById('sync-status');
+            if (statusEl) statusEl.classList.remove('hidden');
 
             unsubscribe = onSnapshot(syncDocRef, (docSnap) => {
                 isSyncing = true;
@@ -619,14 +630,14 @@
                 updateList();
                 isSyncing = false;
             }, (error) => {
-                console.error("Firestore sync error:", error);
+                console.warn("Firestore sync notification:", error);
                 isSyncing = false;
             });
         }
 
         async function saveCloudData() {
             saveLocalProgress();
-            if (!auth || !auth.currentUser || !db || isSyncing) return;
+            if (!syncCode || !auth || !auth.currentUser || !db || isSyncing) return;
             
             const progress = wordData
                 .filter(w => w.mistakes > 0 || (w.history && w.history.length > 0) || w.latestResult || w.mistakeRound)
@@ -647,17 +658,18 @@
             }
         }
 
-        function loadLocalData() {
-            document.getElementById('sync-code-input').value = syncCode;
-            loadSavedLocalProgress();
-            if (orderStates.all.indices.length === 0) initShuffle('all');
-            if (orderStates.review.indices.length === 0) initShuffle('review');
-            showCard();
-        }
-
         window.changeSyncCode = function() {
             const inputVal = document.getElementById('sync-code-input').value.trim();
-            if (!inputVal) return;
+            if (!inputVal) {
+                syncCode = '';
+                localStorage.removeItem('kouki_flashcards_sync_code');
+                localStorage.removeItem('flashcards_sync_code');
+                if (unsubscribe) unsubscribe();
+                const statusEl = document.getElementById('sync-status');
+                if (statusEl) statusEl.classList.add('hidden');
+                showModal('alert', '同期設定を空欄（未設定）にしました。\n現在は端末内のローカル保存で学習できます。', 'OK', closeModal);
+                return;
+            }
             syncCode = inputVal;
             localStorage.setItem('flashcards_sync_code', syncCode);
             localStorage.setItem('kouki_flashcards_sync_code', syncCode);
@@ -665,9 +677,9 @@
             initShuffle('all');
             initShuffle('review');
             showCard();
-            if (auth && auth.currentUser) {
-                subscribeToSyncData();
-            }
+            updateList();
+            setupCloudSync();
+            showModal('alert', `合言葉「${syncCode}」で同期を設定しました！`, 'OK', closeModal);
         };
 
         const cardInner = document.getElementById('card-inner');
@@ -1070,10 +1082,14 @@
 
         function showModal(type, message, btn1Text, btn1Action, btn2Text = null, btn2Action = null) {
             const modal = document.getElementById('unified-modal');
+            const titleEl = document.getElementById('modal-title');
             const msgEl = document.getElementById('modal-message');
+            const inputContainer = document.getElementById('modal-input-container');
             const btn1 = document.getElementById('modal-btn-primary');
             const btn2 = document.getElementById('modal-btn-secondary');
             
+            titleEl.classList.add('hidden');
+            inputContainer.classList.add('hidden');
             msgEl.innerHTML = message.replace(/\n/g, '<br>');
             
             btn1.textContent = btn1Text;
@@ -1088,29 +1104,95 @@
             }
             
             if (type === 'danger') {
-                btn1.classList.replace('bg-blue-600', 'bg-red-600');
-                btn1.classList.replace('hover:bg-blue-700', 'hover:bg-red-700');
-                btn1.classList.replace('focus:ring-blue-300', 'focus:ring-red-300');
+                btn1.className = "w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 font-bold transition-all text-lg shadow-sm";
             } else {
-                btn1.classList.replace('bg-red-600', 'bg-blue-600');
-                btn1.classList.replace('hover:bg-red-700', 'hover:bg-blue-700');
-                btn1.classList.replace('focus:ring-red-300', 'focus:ring-blue-300');
+                btn1.className = "w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-300 font-bold transition-all text-lg shadow-sm";
             }
             
             modal.classList.remove('hidden');
         }
 
+        function showInputModal(type, title, message, placeholder, btn1Text, onSubmit, btn2Text = null, btn2Action = null) {
+            const modal = document.getElementById('unified-modal');
+            const titleEl = document.getElementById('modal-title');
+            const msgEl = document.getElementById('modal-message');
+            const inputContainer = document.getElementById('modal-input-container');
+            const inputEl = document.getElementById('modal-input');
+            const errorEl = document.getElementById('modal-input-error');
+            const btn1 = document.getElementById('modal-btn-primary');
+            const btn2 = document.getElementById('modal-btn-secondary');
+
+            titleEl.textContent = title;
+            titleEl.classList.remove('hidden');
+            msgEl.innerHTML = message.replace(/\n/g, '<br>');
+            
+            inputEl.value = '';
+            inputEl.placeholder = placeholder;
+            errorEl.textContent = '';
+            errorEl.classList.add('hidden');
+            inputContainer.classList.remove('hidden');
+
+            btn1.textContent = btn1Text;
+            btn1.onclick = () => {
+                const val = inputEl.value.trim();
+                const err = onSubmit(val);
+                if (err) {
+                    errorEl.textContent = err;
+                    errorEl.classList.remove('hidden');
+                } else {
+                    closeModal();
+                }
+            };
+
+            if (btn2Text) {
+                btn2.textContent = btn2Text;
+                btn2.classList.remove('hidden');
+                btn2.onclick = btn2Action;
+            } else {
+                btn2.classList.add('hidden');
+            }
+
+            if (type === 'danger') {
+                btn1.className = "w-full py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 focus:outline-none focus:ring-4 focus:ring-red-300 font-bold transition-all text-lg shadow-sm";
+            } else {
+                btn1.className = "w-full py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 focus:outline-none focus:ring-4 focus:ring-orange-300 font-bold transition-all text-lg shadow-sm";
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => inputEl.focus(), 100);
+        }
+
         window.closeModal = function() {
             document.getElementById('unified-modal').classList.add('hidden');
+            const inputContainer = document.getElementById('modal-input-container');
+            if (inputContainer) inputContainer.classList.add('hidden');
         };
 
         window.initiateReset = function() {
-            showModal('danger', 'すべての単語の正誤履歴をリセットしてよろしいですか？\nこの操作は元に戻せません。', 'はい、リセットします', () => {
-                showModal('danger', '本当にリセットしてよろしいですか？\n（合言葉が同じ他の端末の履歴も消えます）', '最終確認：リセットする', () => {
+            // 同期コードが未設定（空欄）の場合はリセット不可
+            if (!syncCode) {
+                showModal('alert', '⚠️ 同期コード（合言葉）が入力・設定されていません。\n子供の誤消去を防ぐため、同期コードが設定されている時のみ履歴をリセットできます。\n画面上部で同期コードを設定してから実行してください。', 'OK', closeModal);
+                return;
+            }
+
+            // 同期コードが設定されている場合：合言葉の再確認モーダルを表示
+            showInputModal(
+                'danger',
+                '履歴のリセット（保護者確認）',
+                'すべての単語の正誤履歴をリセットします。\n実行するには、設定中の同期コード（合言葉）を入力してください。',
+                '合言葉を入力',
+                'リセットを実行する',
+                (inputVal) => {
+                    if (inputVal !== syncCode) {
+                        return '⚠️ 同期コードが一致しません。';
+                    }
                     executeReset();
-                    closeModal();
-                }, 'キャンセル', closeModal);
-            }, 'キャンセル', closeModal);
+                    showModal('alert', '✨ すべての正誤履歴をリセットしました。', 'OK', closeModal);
+                    return null; // 成功
+                },
+                'キャンセル',
+                closeModal
+            );
         };
 
         function executeReset() {
@@ -1135,11 +1217,24 @@
             }
         }
 
-        window.onload = function() {
+        // --- 確実な即時初期化 ---
+        function startApp() {
+            document.getElementById('sync-code-input').value = syncCode;
             totalWordsDisplay.textContent = wordData.length;
+            loadSavedLocalProgress();
             saveRound();
+            updateReviewBadge();
+            initShuffle('all');
+            initShuffle('review');
+            showCard();
             setupCloudSync();
-        };
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', startApp);
+        } else {
+            startApp();
+        }
     </script>
 </body>
 </html>
