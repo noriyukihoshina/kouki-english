@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6;
+            background-color: #EE8611;
         }
         .perspective { perspective: 1000px; }
         .preserve-3d { transform-style: preserve-3d; }
@@ -24,19 +24,19 @@
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-    <header class="bg-white shadow-sm p-4 text-center relative">
-        <div class="inline-block px-3 py-0.5 bg-blue-100 text-blue-800 text-xs font-bold rounded-full mb-1">
+    <header class="bg-white shadow-sm p-4 text-center relative border-b border-orange-200">
+        <div class="inline-block px-3 py-0.5 bg-orange-100 text-orange-800 text-xs font-bold rounded-full mb-1">
             幸希 向け高校受験対策
         </div>
         <h1 class="text-2xl font-bold text-gray-800">高校受験対策 英単語帳 (1〜240問)</h1>
         
-        <div class="mt-3 flex flex-wrap justify-center items-center gap-2 text-xs md:text-sm text-gray-600 bg-blue-50 p-2 rounded-lg max-w-xl mx-auto border border-blue-100">
-            <span class="font-semibold text-blue-800 flex items-center">
+        <div class="mt-3 flex flex-wrap justify-center items-center gap-2 text-xs md:text-sm text-gray-600 bg-orange-50/80 p-2 rounded-lg max-w-xl mx-auto border border-orange-200">
+            <span class="font-semibold text-orange-900 flex items-center">
                 <svg class="w-4 h-4 mr-1 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 0115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
                 同期コード:
             </span>
-            <input type="text" id="sync-code-input" class="px-2 py-1 border border-gray-300 rounded text-center font-mono font-bold w-32 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white" placeholder="kouki0827" value="kouki0827" />
-            <button onclick="changeSyncCode()" class="px-3 py-1 bg-blue-600 text-white rounded font-medium hover:bg-blue-700 transition-colors shadow-sm">同期設定</button>
+            <input type="text" id="sync-code-input" class="px-2 py-1 border border-gray-300 rounded text-center font-mono font-bold w-32 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white" placeholder="kouki0827" value="kouki0827" />
+            <button onclick="changeSyncCode()" class="px-3 py-1 bg-gray-800 text-white rounded font-medium hover:bg-black transition-colors shadow-sm">同期設定</button>
             <span id="sync-status" class="ml-2 text-xs font-medium text-emerald-600 flex items-center hidden">
                 <span class="w-2 h-2 bg-emerald-500 rounded-full mr-1 animate-pulse"></span> 同期中
             </span>
@@ -46,11 +46,11 @@
     <main class="flex-grow container mx-auto p-4 flex flex-col items-center max-w-3xl">
         
         <div class="flex flex-col md:flex-row w-full justify-between items-center mb-6 gap-4">
-            <div class="flex space-x-4">
-                <button id="tab-flashcard" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 transition-colors" onclick="switchTab('flashcard')">単語帳モード</button>
-                <button id="tab-list" class="px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-lg shadow-sm font-bold hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors" onclick="switchTab('list')">間違えた単語一覧</button>
+            <div class="flex space-x-3">
+                <button id="tab-flashcard" class="px-4 py-2 bg-white text-gray-900 rounded-xl shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-white transition-all" onclick="switchTab('flashcard')">単語帳モード</button>
+                <button id="tab-list" class="px-4 py-2 bg-black/20 text-white border border-white/20 rounded-xl shadow-sm font-bold hover:bg-black/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all" onclick="switchTab('list')">間違えた単語一覧</button>
             </div>
-            <button onclick="initiateReset()" class="px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-lg shadow-sm font-semibold hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-400 flex items-center transition-colors">
+            <button onclick="initiateReset()" class="px-4 py-2 bg-white text-red-600 border border-red-200 rounded-xl shadow-md font-semibold hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-400 flex items-center transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
                 </svg>
@@ -60,14 +60,14 @@
 
         <div id="flashcard-area" class="w-full flex flex-col items-center">
             
-            <div class="flex justify-center gap-2 mb-4 bg-gray-200 p-1 rounded-full shadow-inner">
-                <button id="mode-all-btn" class="px-6 py-2 rounded-full font-bold text-sm bg-white text-blue-700 shadow transition-all duration-200" onclick="setMode('all')">全問モード</button>
-                <button id="mode-review-btn" class="px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200" onclick="setMode('review')">復習モード (×のみ)</button>
+            <div class="flex justify-center gap-2 mb-4 bg-black/15 backdrop-blur-sm p-1.5 rounded-full shadow-inner">
+                <button id="mode-all-btn" class="px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-900 shadow transition-all duration-200" onclick="setMode('all')">全問モード</button>
+                <button id="mode-review-btn" class="px-6 py-2 rounded-full font-bold text-sm text-white/80 hover:text-white transition-all duration-200" onclick="setMode('review')">復習モード (×のみ)</button>
             </div>
 
-            <div class="mb-4 text-gray-500 font-medium text-sm flex gap-4">
-                <span>出題: <span id="current-index-display" class="font-bold text-gray-700">1</span> / <span id="total-words-display">0</span>問</span>
-                <span class="border-l border-gray-300 pl-4">現在の連続学習: <span id="session-count-display" class="font-bold text-blue-600">0</span>問</span>
+            <div class="mb-4 text-white font-semibold text-sm flex gap-4 bg-black/20 backdrop-blur-sm px-5 py-2 rounded-full shadow-sm">
+                <span>出題: <span id="current-index-display" class="font-bold text-white">1</span> / <span id="total-words-display">0</span>問</span>
+                <span class="border-l border-white/30 pl-4">現在の連続学習: <span id="session-count-display" class="font-bold text-yellow-300">0</span>問</span>
             </div>
 
             <div class="flex flex-col md:flex-row items-center justify-center w-full max-w-2xl gap-6">
@@ -75,7 +75,7 @@
                 <div class="relative w-full max-w-md aspect-[4/3] perspective cursor-pointer" id="flashcard" onclick="flipCard()">
                     <div id="card-inner" class="w-full h-full relative preserve-3d transition-transform">
                         
-                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center backface-hidden border-2 border-gray-100 p-6">
+                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-2xl flex flex-col items-center justify-center backface-hidden border-2 border-orange-100 p-6">
                             <div id="front-mistake-count" class="absolute top-4 right-4 text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg text-sm hidden">
                                 × <span id="front-mistake-number">0</span>
                             </div>
@@ -83,40 +83,40 @@
                             <p id="word-kana" class="text-xl md:text-2xl text-gray-400 text-center font-medium"></p>
                         </div>
 
-                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-xl flex flex-col items-center justify-center backface-hidden rotate-y-180 border-2 border-blue-100 p-6">
+                        <div class="absolute w-full h-full bg-white rounded-2xl shadow-2xl flex flex-col items-center justify-center backface-hidden rotate-y-180 border-2 border-orange-200 p-6">
                             <div id="back-mistake-count" class="absolute top-4 right-4 text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg text-sm hidden">
                                 × <span id="back-mistake-number">0</span>
                             </div>
-                            <h3 class="text-sm font-bold text-blue-400 mb-3 uppercase tracking-wider">意味</h3>
+                            <h3 class="text-sm font-bold text-orange-500 mb-3 uppercase tracking-wider">意味</h3>
                             <p id="word-ja" class="text-3xl md:text-4xl font-bold text-center text-gray-800 leading-tight"></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex flex-row md:flex-col gap-4 justify-center items-center shrink-0 w-full md:w-auto">
-                    <button id="flip-btn" onclick="flipCard()" class="w-16 h-16 md:w-20 md:h-20 bg-gray-100 border-2 border-gray-200 rounded-2xl flex items-center justify-center shadow-sm hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-300 text-gray-600 transition-all" title="めくる (Enter)">
+                    <button id="flip-btn" onclick="flipCard()" class="w-16 h-16 md:w-20 md:h-20 bg-white border-2 border-orange-200 rounded-2xl flex items-center justify-center shadow-lg hover:bg-orange-50 focus:outline-none focus:ring-4 focus:ring-white/50 text-gray-700 transition-all" title="めくる (Enter)">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 md:h-10 md:w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                     </button>
                     
                     <div id="judgment-controls" class="flex gap-4 md:flex-col hidden absolute md:relative z-10 md:z-auto">
-                        <button onclick="judge(true, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-green-50 border-2 border-green-200 text-green-600 text-4xl font-bold shadow-md hover:bg-green-100 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-green-300 flex items-center justify-center transition-all" title="正解">
+                        <button onclick="judge(true, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-green-500 text-white text-4xl font-bold shadow-xl hover:bg-green-600 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/50 flex items-center justify-center transition-all" title="正解">
                             〇
                         </button>
-                        <button onclick="judge(false, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-red-50 border-2 border-red-200 text-red-600 text-4xl font-bold shadow-md hover:bg-red-100 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-300 flex items-center justify-center transition-all" title="不正解">
+                        <button onclick="judge(false, event)" class="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-red-500 text-white text-4xl font-bold shadow-xl hover:bg-red-600 hover:scale-105 focus:outline-none focus:ring-4 focus:ring-white/50 flex items-center justify-center transition-all" title="不正解">
                             ×
                         </button>
                     </div>
                 </div>
             </div>
             
-            <p class="mt-6 text-sm text-gray-400 font-medium">※カードをタップ、または[Enter]キーでめくります</p>
+            <p class="mt-6 text-sm text-white font-bold drop-shadow">※カードをタップ、または[Enter]キーでめくります</p>
         </div>
 
         <div id="list-area" class="w-full hidden flex-col items-center">
-            <h2 class="text-xl font-bold mb-4 text-gray-800">×がついた単語一覧</h2>
-            <div class="w-full overflow-x-auto bg-white rounded-xl shadow border border-gray-100">
+            <h2 class="text-xl font-bold mb-4 text-white drop-shadow">×がついた単語一覧</h2>
+            <div class="w-full overflow-x-auto bg-white rounded-2xl shadow-xl border border-orange-100">
                 <table class="min-w-full leading-normal">
                     <thead>
                         <tr>
@@ -135,7 +135,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="no-mistakes-msg" class="mt-8 text-gray-500 font-medium hidden">
+            <div id="no-mistakes-msg" class="mt-8 text-white font-bold bg-black/20 backdrop-blur-sm px-6 py-4 rounded-2xl shadow hidden">
                 ×がついた単語はありません。素晴らしい！🎉
             </div>
         </div>
@@ -615,11 +615,11 @@
             const btnReview = document.getElementById('mode-review-btn');
             
             if (learningMode === 'all') {
-                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm bg-white text-blue-700 shadow transition-all duration-200";
-                btnReview.className = "px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200";
+                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm bg-white text-gray-900 shadow transition-all duration-200";
+                btnReview.className = "px-6 py-2 rounded-full font-bold text-sm text-white/80 hover:text-white transition-all duration-200";
             } else {
                 btnReview.className = "px-6 py-2 rounded-full font-bold text-sm bg-white text-red-600 shadow transition-all duration-200";
-                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm text-gray-500 hover:text-gray-700 transition-all duration-200";
+                btnAll.className = "px-6 py-2 rounded-full font-bold text-sm text-white/80 hover:text-white transition-all duration-200";
             }
         }
 
@@ -770,10 +770,8 @@
                 listArea.classList.add('hidden');
                 listArea.classList.remove('flex');
                 
-                tabFlashcard.classList.replace('bg-white', 'bg-blue-600');
-                tabFlashcard.classList.replace('text-gray-700', 'text-white');
-                tabList.classList.replace('bg-blue-600', 'bg-white');
-                tabList.classList.replace('text-white', 'text-gray-700');
+                tabFlashcard.className = "px-4 py-2 bg-white text-gray-900 rounded-xl shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-white transition-all";
+                tabList.className = "px-4 py-2 bg-black/20 text-white border border-white/20 rounded-xl shadow-sm font-bold hover:bg-black/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all";
                 showCard();
             } else {
                 flashcardArea.classList.add('hidden');
@@ -781,10 +779,8 @@
                 listArea.classList.remove('hidden');
                 listArea.classList.add('flex');
 
-                tabList.classList.replace('bg-white', 'bg-blue-600');
-                tabList.classList.replace('text-gray-700', 'text-white');
-                tabFlashcard.classList.replace('bg-blue-600', 'bg-white');
-                tabFlashcard.classList.replace('text-white', 'text-gray-700');
+                tabList.className = "px-4 py-2 bg-white text-gray-900 rounded-xl shadow-md font-bold focus:outline-none focus:ring-2 focus:ring-white transition-all";
+                tabFlashcard.className = "px-4 py-2 bg-black/20 text-white border border-white/20 rounded-xl shadow-sm font-bold hover:bg-black/30 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all";
                 
                 updateList();
             }
