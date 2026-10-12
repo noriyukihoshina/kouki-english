@@ -813,6 +813,75 @@
             }
         };
 
+        function promptRoundClearOrReview(isFromReviewMode = false) {
+            const reviewWords = getReviewWords();
+            const mistakeCount = reviewWords.length;
+            const current = currentRound;
+            const next = current + 1;
+
+            if (mistakeCount === 0) {
+                showModal('round_perfect',
+                    `🎉✨ 第${current}周目 パーフェクト達成！！ ✨🎉\n\n全${wordData.length}問すべて正解しました！\n素晴らしい実力です！`,
+                    `第${next}周へ進む`,
+                    async () => {
+                        await moveToNextRound();
+                    }
+                );
+                return;
+            }
+
+            const prefix = isFromReviewMode 
+                ? `🎉 復習モードを1周クリアしました！\n\n`
+                : `🏆 第${current}周目をクリアしました！（全${wordData.length}問中、今周のミス ${mistakeCount}問）\n\n`;
+            const message = `${prefix}第${current}周目の復習を始めますか？`;
+
+            showModal('round_clear',
+                message,
+                `復習スタート`,
+                () => {
+                    closeModal();
+                    sessionCount = 0;
+                    setMode('review');
+                },
+                `間違いをリセットして第${next}周目に移る`,
+                () => {
+                    confirmMoveToNextRound();
+                }
+            );
+        }
+
+        function confirmMoveToNextRound() {
+            const current = currentRound;
+            const next = current + 1;
+            const confirmMessage = `⚠️ 第${current}周目の復習問題がリセットされます。\n\nよろしいですか？\n（※これまでの通算ミス回数や直近5回の正誤履歴はそのまま維持されます）`;
+
+            showModal('danger',
+                confirmMessage,
+                `復習スタート`,
+                () => {
+                    closeModal();
+                    sessionCount = 0;
+                    setMode('review');
+                },
+                `間違いをリセットして第${next}周目に移る`,
+                async () => {
+                    await moveToNextRound();
+                }
+            );
+        }
+
+        async function moveToNextRound() {
+            closeModal();
+            sessionCount = 0;
+            currentRound++;
+            saveRound();
+            initShuffle('all');
+            learningMode = 'all';
+            updateModeUI();
+            showCard();
+            await saveCloudData();
+        }
+
         window.judge = function(isCorrect, event) {
             if (event) event.stopPropagation(); 
 
@@ -856,71 +925,10 @@
 
             if (isModeFinished) {
                 if (learningMode === 'all') {
-                    // === 全問（周回）完走時の節目イベント！ ===
-                    const reviewWords = getReviewWords();
-                    const mistakeCount = reviewWords.length;
-                    const correctCount = wordData.length - mistakeCount;
-                    const finishedRound = currentRound;
-
-                    if (mistakeCount > 0) {
-                        showModal('round_clear', 
-                            `🏆 第${finishedRound}周目をクリアしました！（全${wordData.length}問）\n\n・正解（〇）: ${correctCount}問\n・今周のミス（×）: ${mistakeCount}問\n\n今周で間違えた${mistakeCount}問を復習しますか？`,
-                            `今周の${mistakeCount}問を復習する`,
-                            () => {
-                                closeModal();
-                                sessionCount = 0;
-                                setMode('review');
-                            },
-                            `第${finishedRound + 1}周へ進む`,
-                            () => {
-                                closeModal();
-                                sessionCount = 0;
-                                currentRound++;
-                                saveRound();
-                                initShuffle('all');
-                                showCard();
-                            }
-                        );
-                    } else {
-                        showModal('round_perfect',
-                            `🎉✨ 第${finishedRound}周目 パーフェクト達成！！ ✨🎉\n\n全${wordData.length}問すべて正解しました！\n素晴らしい実力です！`,
-                            `第${finishedRound + 1}周へ進む`,
-                            () => {
-                                closeModal();
-                                sessionCount = 0;
-                                currentRound++;
-                                saveRound();
-                                initShuffle('all');
-                                showCard();
-                            },
-                            `一覧を見る`,
-                            () => {
-                                closeModal();
-                                sessionCount = 0;
-                                currentRound++;
-                                saveRound();
-                                switchTab('list');
-                            }
-                        );
-                    }
+                    promptRoundClearOrReview(false);
                     return;
                 } else if (learningMode === 'review') {
-                    // === 復習モード完走時（正解しても消えないため、1周完了メッセージ） ===
-                    showModal('review_continue',
-                        `🎉 復習モード（全${state.indices.length}問）を1周クリアしました！\n\n納得いくまで何度でも復習できます。もう一度復習しますか？`,
-                        `もう一度復習する`,
-                        () => {
-                            closeModal();
-                            initShuffle('review');
-                            showCard();
-                        },
-                        `全問モードに戻る`,
-                        () => {
-                            closeModal();
-                            sessionCount = 0;
-                            setMode('all');
-                        }
-                    );
+                    promptRoundClearOrReview(true);
                     return;
                 }
             }
