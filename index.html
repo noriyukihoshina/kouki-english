@@ -173,7 +173,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- 厳選240単語データ ---
+        // --- 484 words ---
         const initialWordList = [
             { id: 1, en: "people", kana: "（ピープル）", ja: "人々", mistakes: 0, history: [] },
             { id: 2, en: "one", kana: "（ワン）", ja: "1", mistakes: 0, history: [] },
@@ -414,7 +414,251 @@
             { id: 237, en: "sit", kana: "（シット）", ja: "座る", mistakes: 0, history: [] },
             { id: 238, en: "start", kana: "（スタート）", ja: "始める", mistakes: 0, history: [] },
             { id: 239, en: "break", kana: "（ブレイク）", ja: "~を壊す", mistakes: 0, history: [] },
-            { id: 240, en: "wear", kana: "（ウェア）", ja: "~を着る", mistakes: 0, history: [] }
+            { id: 240, en: "wear", kana: "（ウェア）", ja: "~を着る", mistakes: 0, history: [] },
+            { id: 241, en: "society", kana: "（ソサエティ）", ja: "社会", mistakes: 0, history: [] },
+            { id: 242, en: "experience", kana: "（エクスペリエンス）", ja: "経験", mistakes: 0, history: [] },
+            { id: 243, en: "activity", kana: "（アクティビティ）", ja: "活動", mistakes: 0, history: [] },
+            { id: 244, en: "century", kana: "（センチュリー）", ja: "世紀", mistakes: 0, history: [] },
+            { id: 245, en: "reason", kana: "（リーズン）", ja: "理由", mistakes: 0, history: [] },
+            { id: 246, en: "customer", kana: "（カスタマー）", ja: "客・顧客", mistakes: 0, history: [] },
+            { id: 247, en: "volunteer", kana: "（ボランティア）", ja: "ボランティア", mistakes: 0, history: [] },
+            { id: 248, en: "language", kana: "（ラングエッジ）", ja: "言語", mistakes: 0, history: [] },
+            { id: 249, en: "communication", kana: "（コミュニケーション）", ja: "意思疎通・コミュニケーション", mistakes: 0, history: [] },
+            { id: 250, en: "government", kana: "（ガバメント）", ja: "政府", mistakes: 0, history: [] },
+            { id: 251, en: "education", kana: "（エデュケーション）", ja: "教育", mistakes: 0, history: [] },
+            { id: 252, en: "opinion", kana: "（オピニオン）", ja: "意見", mistakes: 0, history: [] },
+            { id: 253, en: "information", kana: "（インフォメーション）", ja: "情報", mistakes: 0, history: [] },
+            { id: 254, en: "situation", kana: "（シチュエーション）", ja: "状況・立場", mistakes: 0, history: [] },
+            { id: 255, en: "history", kana: "（ヒストリー）", ja: "歴史", mistakes: 0, history: [] },
+            { id: 256, en: "success", kana: "（サクセス）", ja: "成功", mistakes: 0, history: [] },
+            { id: 257, en: "failure", kana: "（フェイリャー）", ja: "失敗", mistakes: 0, history: [] },
+            { id: 258, en: "schedule", kana: "（スケジュール）", ja: "予定", mistakes: 0, history: [] },
+            { id: 259, en: "subject", kana: "（サブジェクト）", ja: "科目・主題", mistakes: 0, history: [] },
+            { id: 260, en: "secret", kana: "（シークレット）", ja: "秘密", mistakes: 0, history: [] },
+            { id: 261, en: "health", kana: "（ヘルス）", ja: "健康", mistakes: 0, history: [] },
+            { id: 262, en: "hobby", kana: "（ホビー）", ja: "趣味", mistakes: 0, history: [] },
+            { id: 263, en: "scientist", kana: "（サイエンティスト）", ja: "科学者", mistakes: 0, history: [] },
+            { id: 264, en: "passenger", kana: "（パッセンジャー）", ja: "乗客", mistakes: 0, history: [] },
+            { id: 265, en: "steward", kana: "（スチュワード）", ja: "客室乗務員", mistakes: 0, history: [] },
+            { id: 266, en: "event", kana: "（イベント）", ja: "行事・イベント", mistakes: 0, history: [] },
+            { id: 267, en: "program", kana: "（プログラム）", ja: "番組・計画", mistakes: 0, history: [] },
+            { id: 268, en: "project", kana: "（プロジェクト）", ja: "計画・事業", mistakes: 0, history: [] },
+            { id: 269, en: "result", kana: "（リザルト）", ja: "結果", mistakes: 0, history: [] },
+            { id: 270, en: "purpose", kana: "（パーパス）", ja: "目的", mistakes: 0, history: [] },
+            { id: 271, en: "matter", kana: "（マター）", ja: "事柄・問題", mistakes: 0, history: [] },
+            { id: 272, en: "trouble", kana: "（トラブル）", ja: "心配・迷惑", mistakes: 0, history: [] },
+            { id: 273, en: "chance", kana: "（チャンス）", ja: "機会・チャンス", mistakes: 0, history: [] },
+            { id: 274, en: "earth", kana: "（アース）", ja: "地球", mistakes: 0, history: [] },
+            { id: 275, en: "village", kana: "（ヴィレッジ）", ja: "村", mistakes: 0, history: [] },
+            { id: 276, en: "island", kana: "（アイランド）", ja: "島", mistakes: 0, history: [] },
+            { id: 277, en: "climate", kana: "（クライメイト）", ja: "気候", mistakes: 0, history: [] },
+            { id: 278, en: "weather", kana: "（ウェザー）", ja: "天気", mistakes: 0, history: [] },
+            { id: 279, en: "season", kana: "（シーズン）", ja: "季節", mistakes: 0, history: [] },
+            { id: 280, en: "uniform", kana: "（ユニフォーム）", ja: "制服", mistakes: 0, history: [] },
+            { id: 281, en: "rule", kana: "（ルール）", ja: "規則", mistakes: 0, history: [] },
+            { id: 282, en: "tool", kana: "（ツール）", ja: "道具", mistakes: 0, history: [] },
+            { id: 283, en: "device", kana: "（デバイス）", ja: "装置・デバイス", mistakes: 0, history: [] },
+            { id: 284, en: "machine", kana: "（マシーン）", ja: "機械", mistakes: 0, history: [] },
+            { id: 285, en: "electricity", kana: "（エレクトリシティ）", ja: "電気", mistakes: 0, history: [] },
+            { id: 286, en: "energy", kana: "（エネルギー）", ja: "エネルギー", mistakes: 0, history: [] },
+            { id: 287, en: "waste", kana: "（ウェイスト）", ja: "無駄・廃棄物 / 無駄にする", mistakes: 0, history: [] },
+            { id: 288, en: "trash", kana: "（トラッシュ）", ja: "ごみ", mistakes: 0, history: [] },
+            { id: 289, en: "plastic", kana: "（プラスチック）", ja: "プラスチック", mistakes: 0, history: [] },
+            { id: 290, en: "product", kana: "（プロダクト）", ja: "製品", mistakes: 0, history: [] },
+            { id: 291, en: "material", kana: "（マテリアル）", ja: "材料・素材", mistakes: 0, history: [] },
+            { id: 292, en: "factory", kana: "（ファクトリー）", ja: "工場", mistakes: 0, history: [] },
+            { id: 293, en: "science", kana: "（サイエンス）", ja: "理科", mistakes: 0, history: [] },
+            { id: 294, en: "math", kana: "（マス）", ja: "数学", mistakes: 0, history: [] },
+            { id: 295, en: "geography", kana: "（ジオグラフィー）", ja: "地理", mistakes: 0, history: [] },
+            { id: 296, en: "clerk", kana: "（クラーク）", ja: "店員", mistakes: 0, history: [] },
+            { id: 297, en: "doctor", kana: "（ドクター）", ja: "医者", mistakes: 0, history: [] },
+            { id: 298, en: "nurse", kana: "（ナース）", ja: "看護師", mistakes: 0, history: [] },
+            { id: 299, en: "improve", kana: "（インプルーヴ）", ja: "向上させる・改善する", mistakes: 0, history: [] },
+            { id: 300, en: "communicate", kana: "（コミュニケート）", ja: "意思疎通する", mistakes: 0, history: [] },
+            { id: 301, en: "introduce", kana: "（イントロデュース）", ja: "紹介する", mistakes: 0, history: [] },
+            { id: 302, en: "discover", kana: "（ディスカヴァー）", ja: "発見する", mistakes: 0, history: [] },
+            { id: 303, en: "develop", kana: "（ディヴェロップ）", ja: "開発する・発達させる", mistakes: 0, history: [] },
+            { id: 304, en: "protect", kana: "（プロテクト）", ja: "保護する・守る", mistakes: 0, history: [] },
+            { id: 305, en: "reduce", kana: "（リデュース）", ja: "減らす", mistakes: 0, history: [] },
+            { id: 306, en: "recycle", kana: "（リサイクル）", ja: "再利用する", mistakes: 0, history: [] },
+            { id: 307, en: "reuse", kana: "（リユース）", ja: "再使用する", mistakes: 0, history: [] },
+            { id: 308, en: "increase", kana: "（インクリース）", ja: "増やす・増える", mistakes: 0, history: [] },
+            { id: 309, en: "decrease", kana: "（ディクリース）", ja: "減らす・減る", mistakes: 0, history: [] },
+            { id: 310, en: "support", kana: "（サポート）", ja: "支持する・支える", mistakes: 0, history: [] },
+            { id: 311, en: "prepare", kana: "（プリペア）", ja: "準備する", mistakes: 0, history: [] },
+            { id: 312, en: "produce", kana: "（プロデュース）", ja: "生産する", mistakes: 0, history: [] },
+            { id: 313, en: "create", kana: "（クリエイト）", ja: "創造する・作り出す", mistakes: 0, history: [] },
+            { id: 314, en: "design", kana: "（デザイン）", ja: "設計する・デザインする", mistakes: 0, history: [] },
+            { id: 315, en: "perform", kana: "（パフォーム）", ja: "上演する・行う", mistakes: 0, history: [] },
+            { id: 316, en: "express", kana: "（エクスプレス）", ja: "表現する", mistakes: 0, history: [] },
+            { id: 317, en: "explain", kana: "（エクスプレイン）", ja: "説明する", mistakes: 0, history: [] },
+            { id: 318, en: "imagine", kana: "（イマジン）", ja: "想像する", mistakes: 0, history: [] },
+            { id: 319, en: "realize", kana: "（リアライズ）", ja: "実現する・気づく", mistakes: 0, history: [] },
+            { id: 320, en: "believe", kana: "（ビリーヴ）", ja: "信じる", mistakes: 0, history: [] },
+            { id: 321, en: "agree", kana: "（アグリー）", ja: "同意する", mistakes: 0, history: [] },
+            { id: 322, en: "disagree", kana: "（ディスアグリー）", ja: "反対する", mistakes: 0, history: [] },
+            { id: 323, en: "accept", kana: "（アクセプト）", ja: "受け入れる", mistakes: 0, history: [] },
+            { id: 324, en: "receive", kana: "（レシーヴ）", ja: "受け取る", mistakes: 0, history: [] },
+            { id: 325, en: "collect", kana: "（コレクト）", ja: "集める", mistakes: 0, history: [] },
+            { id: 326, en: "expect", kana: "（エクスペクト）", ja: "期待する", mistakes: 0, history: [] },
+            { id: 327, en: "worry", kana: "（ウォリー）", ja: "心配する", mistakes: 0, history: [] },
+            { id: 328, en: "encourage", kana: "（エンカレッジ）", ja: "励ます", mistakes: 0, history: [] },
+            { id: 329, en: "invite", kana: "（インヴァイト）", ja: "招待する", mistakes: 0, history: [] },
+            { id: 330, en: "share", kana: "（シェア）", ja: "共有する", mistakes: 0, history: [] },
+            { id: 331, en: "save", kana: "（セイヴ）", ja: "救う・蓄える・省く", mistakes: 0, history: [] },
+            { id: 332, en: "destroy", kana: "（デストロイ）", ja: "破壊する", mistakes: 0, history: [] },
+            { id: 333, en: "disappear", kana: "（ディサピア）", ja: "消え去る", mistakes: 0, history: [] },
+            { id: 334, en: "appear", kana: "（アピア）", ja: "現れる", mistakes: 0, history: [] },
+            { id: 335, en: "continue", kana: "（コンティニュー）", ja: "続ける", mistakes: 0, history: [] },
+            { id: 336, en: "remain", kana: "（リメイン）", ja: "〜のままでいる", mistakes: 0, history: [] },
+            { id: 337, en: "belong", kana: "（ビロング）", ja: "属する", mistakes: 0, history: [] },
+            { id: 338, en: "depend", kana: "（ディペンド）", ja: "依存する・〜次第である", mistakes: 0, history: [] },
+            { id: 339, en: "require", kana: "（リクワイア）", ja: "必要とする", mistakes: 0, history: [] },
+            { id: 340, en: "include", kana: "（インクルード）", ja: "含む", mistakes: 0, history: [] },
+            { id: 341, en: "control", kana: "（コントロール）", ja: "管理する・制御する", mistakes: 0, history: [] },
+            { id: 342, en: "lead", kana: "（リード）", ja: "導く・案内する", mistakes: 0, history: [] },
+            { id: 343, en: "follow", kana: "（フォロー）", ja: "従う・ついていく", mistakes: 0, history: [] },
+            { id: 344, en: "reach", kana: "（リーチ）", ja: "到着する・届く", mistakes: 0, history: [] },
+            { id: 345, en: "happen", kana: "（ハプン）", ja: "起こる", mistakes: 0, history: [] },
+            { id: 346, en: "cause", kana: "（コーズ）", ja: "引き起こす", mistakes: 0, history: [] },
+            { id: 347, en: "prevent", kana: "（プリヴェント）", ja: "防ぐ", mistakes: 0, history: [] },
+            { id: 348, en: "solve", kana: "（ソルヴ）", ja: "解決する", mistakes: 0, history: [] },
+            { id: 349, en: "suggest", kana: "（サジェスト）", ja: "提案する", mistakes: 0, history: [] },
+            { id: 350, en: "discuss", kana: "（ディスカス）", ja: "話し合う", mistakes: 0, history: [] },
+            { id: 351, en: "compare", kana: "（コンペア）", ja: "比較する", mistakes: 0, history: [] },
+            { id: 352, en: "wonder", kana: "（ワンダー）", ja: "〜かしらと思う", mistakes: 0, history: [] },
+            { id: 353, en: "seem", kana: "（スィーム）", ja: "〜のように見える", mistakes: 0, history: [] },
+            { id: 354, en: "foreign", kana: "（フォーリン）", ja: "外国の", mistakes: 0, history: [] },
+            { id: 355, en: "local", kana: "（ローカル）", ja: "地元の・地域の", mistakes: 0, history: [] },
+            { id: 356, en: "expensive", kana: "（イクスペンシヴ）", ja: "高価な", mistakes: 0, history: [] },
+            { id: 357, en: "cheap", kana: "（チープ）", ja: "安い", mistakes: 0, history: [] },
+            { id: 358, en: "delicious", kana: "（デリシャス）", ja: "おいしい", mistakes: 0, history: [] },
+            { id: 359, en: "scared", kana: "（スケアード）", ja: "怖がって", mistakes: 0, history: [] },
+            { id: 360, en: "sick", kana: "（シック）", ja: "病気の", mistakes: 0, history: [] },
+            { id: 361, en: "excited", kana: "（イクサイティッド）", ja: "ワクワクした", mistakes: 0, history: [] },
+            { id: 362, en: "exciting", kana: "（イクサイティング）", ja: "ワクワクさせる", mistakes: 0, history: [] },
+            { id: 363, en: "surprising", kana: "（サプライジング）", ja: "驚くべき", mistakes: 0, history: [] },
+            { id: 364, en: "bored", kana: "（ボード）", ja: "退屈した", mistakes: 0, history: [] },
+            { id: 365, en: "boring", kana: "（ボーリング）", ja: "退屈な", mistakes: 0, history: [] },
+            { id: 366, en: "tired", kana: "（タイアード）", ja: "疲れた", mistakes: 0, history: [] },
+            { id: 367, en: "convenient", kana: "（コンヴィーニエント）", ja: "便利な", mistakes: 0, history: [] },
+            { id: 368, en: "simple", kana: "（シンプル）", ja: "単純な", mistakes: 0, history: [] },
+            { id: 369, en: "complex", kana: "（コンプレックス）", ja: "複雑な", mistakes: 0, history: [] },
+            { id: 370, en: "necessary", kana: "（ネセサリー）", ja: "必要な", mistakes: 0, history: [] },
+            { id: 371, en: "essential", kana: "（エッセンシャル）", ja: "不可欠な", mistakes: 0, history: [] },
+            { id: 372, en: "possible", kana: "（ポッシブル）", ja: "可能な", mistakes: 0, history: [] },
+            { id: 373, en: "impossible", kana: "（インポッシブル）", ja: "不可能な", mistakes: 0, history: [] },
+            { id: 374, en: "useful", kana: "（ユースフル）", ja: "役に立つ", mistakes: 0, history: [] },
+            { id: 375, en: "useless", kana: "（ユースレス）", ja: "役に立たない", mistakes: 0, history: [] },
+            { id: 376, en: "careful", kana: "（ケアフル）", ja: "注意深い", mistakes: 0, history: [] },
+            { id: 377, en: "careless", kana: "（ケアレス）", ja: "不注意な", mistakes: 0, history: [] },
+            { id: 378, en: "safe", kana: "（セイフ）", ja: "安全な", mistakes: 0, history: [] },
+            { id: 379, en: "dangerous", kana: "（デンジャラス）", ja: "危険な", mistakes: 0, history: [] },
+            { id: 380, en: "healthy", kana: "（ヘルシー）", ja: "健康な", mistakes: 0, history: [] },
+            { id: 381, en: "perfect", kana: "（パーフェクト）", ja: "完璧な", mistakes: 0, history: [] },
+            { id: 382, en: "excellent", kana: "（エクセレント）", ja: "優れた", mistakes: 0, history: [] },
+            { id: 383, en: "wonderful", kana: "（ワンダフル）", ja: "素晴らしい", mistakes: 0, history: [] },
+            { id: 384, en: "terrible", kana: "（テリブル）", ja: "ひどい", mistakes: 0, history: [] },
+            { id: 385, en: "serious", kana: "（シリアス）", ja: "深刻な・真面目な", mistakes: 0, history: [] },
+            { id: 386, en: "strange", kana: "（ストレンジ）", ja: "奇妙な", mistakes: 0, history: [] },
+            { id: 387, en: "common", kana: "（コモン）", ja: "共通の・普通の", mistakes: 0, history: [] },
+            { id: 388, en: "unusual", kana: "（アンユージュアル）", ja: "珍しい", mistakes: 0, history: [] },
+            { id: 389, en: "natural", kana: "（ナチュラル）", ja: "自然の・当然の", mistakes: 0, history: [] },
+            { id: 390, en: "artificial", kana: "（アーティフィシャル）", ja: "人工的な", mistakes: 0, history: [] },
+            { id: 391, en: "global", kana: "（グローバル）", ja: "地球規模の・世界的な", mistakes: 0, history: [] },
+            { id: 392, en: "traditional", kana: "（トラディショナル）", ja: "伝統的な", mistakes: 0, history: [] },
+            { id: 393, en: "modern", kana: "（モダン）", ja: "現代の", mistakes: 0, history: [] },
+            { id: 394, en: "ancient", kana: "（エインシャント）", ja: "古代の", mistakes: 0, history: [] },
+            { id: 395, en: "public", kana: "（パブリック）", ja: "公共の", mistakes: 0, history: [] },
+            { id: 396, en: "private", kana: "（プライベート）", ja: "私的な", mistakes: 0, history: [] },
+            { id: 397, en: "similar", kana: "（スィミラー）", ja: "似ている", mistakes: 0, history: [] },
+            { id: 398, en: "various", kana: "（ヴェアリアス）", ja: "様々な", mistakes: 0, history: [] },
+            { id: 399, en: "several", kana: "（セヴェラル）", ja: "いくつかの", mistakes: 0, history: [] },
+            { id: 400, en: "dry", kana: "（ドライ）", ja: "乾いた", mistakes: 0, history: [] },
+            { id: 401, en: "wet", kana: "（ウェット）", ja: "濡れた", mistakes: 0, history: [] },
+            { id: 402, en: "heavy", kana: "（ヘヴィ）", ja: "重い", mistakes: 0, history: [] },
+            { id: 403, en: "light", kana: "（ライト）", ja: "軽い", mistakes: 0, history: [] },
+            { id: 404, en: "suddenly", kana: "（サドゥンリー）", ja: "突然", mistakes: 0, history: [] },
+            { id: 405, en: "finally", kana: "（ファイナリー）", ja: "ついに", mistakes: 0, history: [] },
+            { id: 406, en: "especially", kana: "（エスペシャリー）", ja: "特に", mistakes: 0, history: [] },
+            { id: 407, en: "probably", kana: "（プロバブリー）", ja: "おそらく", mistakes: 0, history: [] },
+            { id: 408, en: "actually", kana: "（アクチュアリィ）", ja: "実際に", mistakes: 0, history: [] },
+            { id: 409, en: "instead", kana: "（インステッド）", ja: "代わりに", mistakes: 0, history: [] },
+            { id: 410, en: "therefore", kana: "（ゼアフォー）", ja: "したがって", mistakes: 0, history: [] },
+            { id: 411, en: "though", kana: "（ゾウ）", ja: "〜だけけれども", mistakes: 0, history: [] },
+            { id: 412, en: "although", kana: "（オールゾウ）", ja: "〜だけけれども", mistakes: 0, history: [] },
+            { id: 413, en: "fourth", kana: "（フォース）", ja: "第4の", mistakes: 0, history: [] },
+            { id: 414, en: "fifth", kana: "（フィフス）", ja: "第5の", mistakes: 0, history: [] },
+            { id: 415, en: "twelfth", kana: "（トゥエルフス）", ja: "第12の", mistakes: 0, history: [] },
+            { id: 416, en: "twentieth", kana: "（トゥエンティエス）", ja: "第20の", mistakes: 0, history: [] },
+            { id: 417, en: "thirty", kana: "（サーティ）", ja: "30", mistakes: 0, history: [] },
+            { id: 418, en: "forty", kana: "（フォーティ）", ja: "40", mistakes: 0, history: [] },
+            { id: 419, en: "fifty", kana: "（フィフティ）", ja: "50", mistakes: 0, history: [] },
+            { id: 420, en: "eighty", kana: "（エイティ）", ja: "80", mistakes: 0, history: [] },
+            { id: 421, en: "ninety", kana: "（ナインティ）", ja: "90", mistakes: 0, history: [] },
+            { id: 422, en: "hundred", kana: "（ハンドレッド）", ja: "100", mistakes: 0, history: [] },
+            { id: 423, en: "thousand", kana: "（サウザンド）", ja: "1000", mistakes: 0, history: [] },
+            { id: 424, en: "million", kana: "（ミリオン）", ja: "100万", mistakes: 0, history: [] },
+            { id: 425, en: "be able to", kana: "（ビー エイブル トゥ）", ja: "～することができる", mistakes: 0, history: [] },
+            { id: 426, en: "be interested in", kana: "（ビー インタレスティッド イン）", ja: "～に興味がある", mistakes: 0, history: [] },
+            { id: 427, en: "be good at", kana: "（ビー グッド アット）", ja: "～が得意である", mistakes: 0, history: [] },
+            { id: 428, en: "be proud of", kana: "（ビー プラウド オブ）", ja: "～を誇りに思う", mistakes: 0, history: [] },
+            { id: 429, en: "be afraid of", kana: "（ビー アフレイド オブ）", ja: "～を恐れる", mistakes: 0, history: [] },
+            { id: 430, en: "be full of", kana: "（ビー フル オブ）", ja: "～でいっぱいである", mistakes: 0, history: [] },
+            { id: 431, en: "be covered with", kana: "（ビー カヴァード ウィズ）", ja: "～で覆われている", mistakes: 0, history: [] },
+            { id: 432, en: "be made of", kana: "（ビー メイド オブ）", ja: "～で作られている", mistakes: 0, history: [] },
+            { id: 433, en: "be born", kana: "（ビー ボーン）", ja: "生まれる", mistakes: 0, history: [] },
+            { id: 434, en: "take care of", kana: "（テイク ケア オブ）", ja: "～の世話をする", mistakes: 0, history: [] },
+            { id: 435, en: "take part in", kana: "（テイク パート イン）", ja: "～に参加する", mistakes: 0, history: [] },
+            { id: 436, en: "take place", kana: "（テイク プレイス）", ja: "（催しなどが）行われる・開催される", mistakes: 0, history: [] },
+            { id: 437, en: "look forward to", kana: "（ルック フォワード トゥ）", ja: "～を楽しみに待つ", mistakes: 0, history: [] },
+            { id: 438, en: "look for", kana: "（ルック フォー）", ja: "～を探す", mistakes: 0, history: [] },
+            { id: 439, en: "look like", kana: "（ルック ライク）", ja: "～のように見える", mistakes: 0, history: [] },
+            { id: 440, en: "look at", kana: "（ルック アット）", ja: "～を見る", mistakes: 0, history: [] },
+            { id: 441, en: "give up", kana: "（ギヴ アップ）", ja: "諦める", mistakes: 0, history: [] },
+            { id: 442, en: "grow up", kana: "（グロウ アップ）", ja: "成長する", mistakes: 0, history: [] },
+            { id: 443, en: "pick up", kana: "（ピック アップ）", ja: "拾う・車で迎えに行く", mistakes: 0, history: [] },
+            { id: 444, en: "find out", kana: "（ファインド アウト）", ja: "（調べて）見つけ出す・知る", mistakes: 0, history: [] },
+            { id: 445, en: "bring up", kana: "（ブリング アップ）", ja: "育てる", mistakes: 0, history: [] },
+            { id: 446, en: "show up", kana: "（ショウ アップ）", ja: "現れる", mistakes: 0, history: [] },
+            { id: 447, en: "come true", kana: "（カム トゥルー）", ja: "（夢などが）実現する", mistakes: 0, history: [] },
+            { id: 448, en: "run out of", kana: "（ラン アウト オブ）", ja: "～を使い果たす", mistakes: 0, history: [] },
+            { id: 449, en: "make daily efforts", kana: "（メイク デイリー エフォーツ）", ja: "日々の努力をする", mistakes: 0, history: [] },
+            { id: 450, en: "make a speech", kana: "（メイク ア スピーチ）", ja: "スピーチをする", mistakes: 0, history: [] },
+            { id: 451, en: "make friends with", kana: "（メイク フレンズ ウィズ）", ja: "～と友達になる", mistakes: 0, history: [] },
+            { id: 452, en: "catch up with", kana: "（キャッチ アップ ウィズ）", ja: "～に追いつく", mistakes: 0, history: [] },
+            { id: 453, en: "keep in touch with", kana: "（キープ イン タッチ ウィズ）", ja: "～と連絡を取り合う", mistakes: 0, history: [] },
+            { id: 454, en: "get along with", kana: "（ゲット アロング ウィズ）", ja: "～と仲良くやっていく", mistakes: 0, history: [] },
+            { id: 455, en: "get on", kana: "（ゲット オン）", ja: "（電車などに）乗る", mistakes: 0, history: [] },
+            { id: 456, en: "get off", kana: "（ゲット オフ）", ja: "（電車などを）降りる", mistakes: 0, history: [] },
+            { id: 457, en: "get well", kana: "（ゲット ウェル）", ja: "（病気が）良くなる", mistakes: 0, history: [] },
+            { id: 458, en: "arrive at", kana: "（アライヴ アット）", ja: "～に到着する", mistakes: 0, history: [] },
+            { id: 459, en: "depend on", kana: "（ディペンド オン）", ja: "～に依存する・～次第である", mistakes: 0, history: [] },
+            { id: 460, en: "agree with", kana: "（アグリー ウィズ）", ja: "～に同意する", mistakes: 0, history: [] },
+            { id: 461, en: "worry about", kana: "（ウォリー アバウト）", ja: "～について心配する", mistakes: 0, history: [] },
+            { id: 462, en: "think of", kana: "（スィンク オブ）", ja: "～について考える", mistakes: 0, history: [] },
+            { id: 463, en: "hear of", kana: "（ヒア オブ）", ja: "～について聞く", mistakes: 0, history: [] },
+            { id: 464, en: "remind of", kana: "（リマインド オブ）", ja: "～を思い出させる", mistakes: 0, history: [] },
+            { id: 465, en: "by the way", kana: "（バイ ザ ウェイ）", ja: "ところで", mistakes: 0, history: [] },
+            { id: 466, en: "for example", kana: "（フォー イグザンプル）", ja: "例えば", mistakes: 0, history: [] },
+            { id: 467, en: "such as", kana: "（サッチ アズ）", ja: "～のような", mistakes: 0, history: [] },
+            { id: 468, en: "because of", kana: "（ビコーズ オブ）", ja: "～のために・～のせいで", mistakes: 0, history: [] },
+            { id: 469, en: "instead of", kana: "（インステッド オブ）", ja: "～の代わりに", mistakes: 0, history: [] },
+            { id: 470, en: "in front of", kana: "（イン フロント オブ）", ja: "～の前に", mistakes: 0, history: [] },
+            { id: 471, en: "at the same time", kana: "（アット ザ セイム タイム）", ja: "同時に", mistakes: 0, history: [] },
+            { id: 472, en: "all over the world", kana: "（オール オーヴァー ザ ワールド）", ja: "世界中で", mistakes: 0, history: [] },
+            { id: 473, en: "of course", kana: "（オブ コース）", ja: "もちろん", mistakes: 0, history: [] },
+            { id: 474, en: "at first", kana: "（アット ファースト）", ja: "最初は", mistakes: 0, history: [] },
+            { id: 475, en: "at last", kana: "（アット ラスト）", ja: "ついに・つじつまが合う", mistakes: 0, history: [] },
+            { id: 476, en: "after all", kana: "（アフター オール）", ja: "結局", mistakes: 0, history: [] },
+            { id: 477, en: "more and more", kana: "（モア アンド モア）", ja: "ますます多くの", mistakes: 0, history: [] },
+            { id: 478, en: "day after day", kana: "（デイ アフター デイ）", ja: "来る日も来る日も", mistakes: 0, history: [] },
+            { id: 479, en: "once more", kana: "（ワンス モア）", ja: "もう一度", mistakes: 0, history: [] },
+            { id: 480, en: "one by one", kana: "（ワン バイ ワン）", ja: "一つずつ", mistakes: 0, history: [] },
+            { id: 481, en: "so far", kana: "（ソー ファー）", ja: "これまでのところ", mistakes: 0, history: [] },
+            { id: 482, en: "a lot of", kana: "（ア ロット オブ）", ja: "たくさんの", mistakes: 0, history: [] },
+            { id: 483, en: "plenty of", kana: "（プレンティ オブ）", ja: "たくさんの", mistakes: 0, history: [] },
+            { id: 484, en: "in order to", kana: "（イン オーダー トゥ）", ja: "～するために", mistakes: 0, history: [] }
         ];
 
         let wordData = [...initialWordList];
@@ -427,7 +671,7 @@
         };
         
         let sessionCount = 0; 
-        const SESSION_LIMIT = 30; // 30問で区切る
+        const SESSION_LIMIT = 70; // 70 items limit
         let currentRound = 1;
         let listFilter = 'review'; // 'review' (要復習のみ) or 'all' (累計すべて)
 
@@ -699,21 +943,54 @@
         function initShuffle(mode) {
             let indices = [];
             if (mode === 'all') {
+                const unattempted = [];
+                const attempted = [];
+                wordData.forEach((w, i) => {
+                    if (!w.history || w.history.length === 0) {
+                        unattempted.push(i);
+                    } else {
+                        attempted.push(i);
+                    }
+                });
+
+                // まだ一度も解いていない単語があり、かつ一部解答済みがある場合（新単語追加時や途中進捗時）
+                if (unattempted.length > 0 && attempted.length > 0) {
+                    for (let i = attempted.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [attempted[i], attempted[j]] = [attempted[j], attempted[i]];
+                    }
+                    for (let i = unattempted.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [unattempted[i], unattempted[j]] = [unattempted[j], unattempted[i]];
+                    }
+                    indices = [...attempted, ...unattempted];
+                    orderStates[mode].indices = indices;
+                    orderStates[mode].currentIndex = attempted.length;
+                    updateReviewBadge();
+                    return;
+                }
+
+                // 全問未解答、または全問解答済みの場合は全問均等シャッフル
                 indices = Array.from({ length: wordData.length }, (_, i) => i);
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                orderStates[mode].indices = indices;
+                orderStates[mode].currentIndex = 0;
             } else if (mode === 'review') {
                 wordData.forEach((w, i) => {
                     if (w.mistakeRound === currentRound) {
                         indices.push(i);
                     }
                 });
+                for (let i = indices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [indices[i], indices[j]] = [indices[j], indices[i]];
+                }
+                orderStates[mode].indices = indices;
+                orderStates[mode].currentIndex = 0;
             }
-
-            for (let i = indices.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [indices[i], indices[j]] = [indices[j], indices[i]];
-            }
-            orderStates[mode].indices = indices;
-            orderStates[mode].currentIndex = 0;
             updateReviewBadge();
         }
 
@@ -1226,6 +1503,51 @@
             }
         }
 
+        // --- デイリー応援メッセージ（1日1回・初回起動時ランダム） ---
+        const dailyCheerMessages = [
+            "覚悟を決めろ！",
+            "選択肢を狭めるな！",
+            "今苦労して楽しい高校生活にしよ！",
+            "ワラベこうき～Fightですよ～！",
+            "頑張りすぎてもかすり傷！",
+            "人生一回キリ。なんてな・・・！",
+            "後悔先に立たずだぞ！",
+            "高校決めて1人キャンプ行ってこい！",
+            "レインボウブリッジ封鎖できませーん！",
+            "頑張れオソマやろう！！"
+        ];
+
+        function checkDailyMessage() {
+            try {
+                // 日本標準時 (JST) で YYYY-MM-DD を取得
+                const now = new Date();
+                const jstDate = new Intl.DateTimeFormat('ja-JP', {
+                    timeZone: 'Asia/Tokyo',
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                }).format(now);
+
+                const lastShown = localStorage.getItem('kouki_last_daily_msg_date');
+                if (lastShown !== jstDate) {
+                    const randIdx = Math.floor(Math.random() * dailyCheerMessages.length);
+                    const chosenMsg = dailyCheerMessages[randIdx];
+                    setTimeout(() => {
+                        showModal('cheer',
+                            chosenMsg,
+                            'よし、やるぞ！🔥',
+                            () => {
+                                localStorage.setItem('kouki_last_daily_msg_date', jstDate);
+                                closeModal();
+                            }
+                        );
+                    }, 500);
+                }
+            } catch (e) {
+                console.warn("Failed to check daily message:", e);
+            }
+        }
+
         // --- 確実な即時初期化 ---
         function startApp() {
             document.getElementById('sync-code-input').value = syncCode;
@@ -1233,10 +1555,15 @@
             loadSavedLocalProgress();
             saveRound();
             updateReviewBadge();
-            initShuffle('all');
-            initShuffle('review');
+            if (!orderStates.all.indices || orderStates.all.indices.length !== wordData.length) {
+                initShuffle('all');
+            }
+            if (!orderStates.review.indices) {
+                initShuffle('review');
+            }
             showCard();
             setupCloudSync();
+            checkDailyMessage();
         }
 
         if (document.readyState === 'loading') {
